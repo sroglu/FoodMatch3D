@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Game.Data
 {
+    
 
     [Serializable]
     public class PuzzleObjectViewData
@@ -17,25 +18,35 @@ namespace Game.Data
     [CreateAssetMenu(fileName = nameof(GameData), menuName = "Game/GameData", order = 1)]
     public class GameData : ScriptableObject
     {
-        [Header("Levels"), Space(5)] [SerializeField]
-        private int _lastLevelId = 5;
+        public static readonly int MatchCountToClear = 3;
+        public static int LastLevelId = 5;
         
         [Header("Puzzle Objects"), Space(5)] [SerializeField] 
         private PuzzleObjectViewData[] _puzzleObjects;
         
-        
-        public PuzzleObjectViewData GetPuzzleObjectViewData(uint typeId)
+        public bool TryGetPuzzleObjectViewData(uint typeId, out PuzzleObjectViewData puzzleObjectViewData)
         {
             foreach (var puzzleObject in _puzzleObjects)
             {
                 if (puzzleObject.TypeId == typeId)
                 {
-                    return puzzleObject;
+                    puzzleObjectViewData = puzzleObject;
+                    return true;
                 }
             }
 
-            Debug.LogError($"PuzzleObjectViewData with TypeId {typeId} not found.");
-            return null;
+            puzzleObjectViewData = null;
+            return false;
+        }
+        
+        public uint[] GetAllPuzzleObjectTypeIds()
+        {
+            var typeIds = new uint[_puzzleObjects.Length];
+            for (int i = 0; i < _puzzleObjects.Length; i++)
+            {
+                typeIds[i] = _puzzleObjects[i].TypeId;
+            }
+            return typeIds;
         }
 
 

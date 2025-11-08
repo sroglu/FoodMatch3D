@@ -2,6 +2,7 @@ using System;
 
 namespace Game.Data
 {
+    [Serializable]
     public struct LevelId : IEquatable<LevelId>
     {
         public int Value;

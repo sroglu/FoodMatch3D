@@ -1,3 +1,4 @@
+using Game;
 using Game.Constants;
 using Game.Data;
 using Game.Data.ModelData;
@@ -36,11 +37,9 @@ public class GameManager : MonoBehaviour
         Instance = this;
         
         _dataStoreManager = new DataStoreManager();
-        var levelData = Resources.Load<LevelData>(nameof(LevelData));
         var gameData = Resources.Load<GameData>(nameof(GameData));
         
         GameDataStore.Initialize();
-        GameDataStore.Instance.SetLevelData(levelData);
         GameDataStore.Instance.SetGameData(gameData);
     }
 
@@ -70,7 +69,7 @@ public class GameManager : MonoBehaviour
     
     public void LoadLevel(LevelId levelId)
     {
-        var level = GameDataStore.Instance.GetLevelDataById(levelId);
+        var level = LevelUtils.LoadLevel(levelId);
         gamePage = new GamePageController(new GamePageModel(new GamePageData(level)));
         dashboardPage.HideView();
         gamePage.ShowView();

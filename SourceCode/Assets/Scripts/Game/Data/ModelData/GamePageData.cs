@@ -4,9 +4,9 @@ namespace Game.Data
 {
     public class GamePageData : ICloneable
     {
-        public Level Level;
+        public LevelData Level;
 
-        public GamePageData(Level level)
+        public GamePageData(LevelData level)
         {
             Level = level;
         }

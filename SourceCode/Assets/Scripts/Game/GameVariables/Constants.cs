@@ -20,9 +20,7 @@ namespace Game.Constants
     public static class LevelPaths
     {
         public static readonly string STREAMING_ASSETS_PATH = Application.streamingAssetsPath;
-        public static readonly string PERSISTENT_DATA_PATH = Application.persistentDataPath;
         public const string LEVEL_FOLDER = "Levels";
-        public const string LOOP_LEVEL_FOLDER = "LoopLevels";
     }
 
     public static class Values
