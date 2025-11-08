@@ -34,9 +34,12 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        
         _dataStoreManager = new DataStoreManager();
         var levelData = Resources.Load<LevelData>(nameof(LevelData));
         var gameData = Resources.Load<GameData>(nameof(GameData));
+        
+        GameDataStore.Initialize();
         GameDataStore.Instance.SetLevelData(levelData);
         GameDataStore.Instance.SetGameData(gameData);
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace mehmetsrl.DataStore
 {
@@ -79,15 +80,14 @@ public class DataStoreManager
         {
             if (Instance != null)
             {
-                while (_instance._databases.Count > 0)
+                using var enumerator = _instance._databases.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    using (var enumerator = _instance._databases.GetEnumerator())
-                    {
-                        enumerator.MoveNext();
-                        enumerator.Current.Value.Dispose();
-                    }
+                    enumerator.Current.Value.Dispose();
+                    Debug.Log($"Disposed datastore database {enumerator.Current.Key}");
                 }
             }
+            _instance._databases.Clear();
             _instance = null;
         }
         
