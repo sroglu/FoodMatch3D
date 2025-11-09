@@ -7,12 +7,28 @@ namespace Game.Data
     
 
     [Serializable]
-    public class PuzzleObjectViewData
+    public class PuzzleObjectViewData : ICloneable
     {
         [HideInInspector] public string Name;
         public uint TypeId;
         public GameObject Prefab;
         public Sprite Sprite;
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
+    } 
+
+    [Serializable]
+    public class CustomerViewData : ICloneable
+    {
+        [HideInInspector] public string Name;
+        public uint TypeId;
+        public Sprite Sprite;
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
     
     [CreateAssetMenu(fileName = nameof(GameData), menuName = "Game/GameData", order = 1)]
@@ -23,6 +39,9 @@ namespace Game.Data
         
         [Header("Puzzle Objects"), Space(5)] [SerializeField] 
         private PuzzleObjectViewData[] _puzzleObjects;
+        
+        [Header("Customers"), Space(5)] [SerializeField] 
+        private CustomerViewData[] _customers;
         
         public bool TryGetPuzzleObjectViewData(uint typeId, out PuzzleObjectViewData puzzleObjectViewData)
         {
@@ -48,14 +67,30 @@ namespace Game.Data
             }
             return typeIds;
         }
+        
+        public bool TryGetCustomerViewData(uint typeId, out CustomerViewData customerViewData)
+        {
+            foreach (var customer in _customers)
+            {
+                if (customer.TypeId == typeId)
+                {
+                    customerViewData = customer;
+                    return true;
+                }
+            }
+
+            customerViewData = null;
+            return false;
+        }
 
 
         private void OnValidate()
         {
-            if (_puzzleObjects == null) return;
-
-            // Check for duplicate TypeIds and set names
             var typeIds = new HashSet<uint>();
+            
+            // Check PuzzleObjects for duplicates and correct naming
+            if (_puzzleObjects == null) return;
+            // Check for duplicate TypeIds and set names
             foreach (var puzzleObject in _puzzleObjects)
             {
                 if (puzzleObject == null) continue;
@@ -70,6 +105,25 @@ namespace Game.Data
                 if (!typeIds.Add(puzzleObject.TypeId))
                 {
                     Debug.LogError($"Duplicate TypeId found: {puzzleObject.TypeId} in GameData '{name}'");
+                }
+            }
+            
+            //Check Customers for duplicates and correct naming
+            typeIds.Clear();
+            if (_customers == null) return;
+            // Check for duplicate TypeIds and set names
+            foreach (var customer in _customers)
+            {
+                if (customer == null) continue;
+                // Ensure Name follows the pattern "Customer {TypeId}"
+                var newName = $"Customer {customer.TypeId}";
+                if (customer.Name != null && customer.Name != newName)
+                {
+                    customer.Name = newName;
+                }
+                if (!typeIds.Add(customer.TypeId))
+                {
+                    Debug.LogError($"Duplicate TypeId found: {customer.TypeId} in GameData '{name}'");
                 }
             }
         }
