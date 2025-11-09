@@ -104,40 +104,18 @@ namespace Game.Editor
 
         private void UpdatePuzzleHolder(Vector3 baseSize, float topOffset)
         {
-            // calculate geometry
-            float halfWidth = baseSize.x * 0.5f;
-            float halfDepth = baseSize.y * 0.5f;
-            // Use the larger base dimension as a baseline for height so a square base behaves like the example.
-            float height = baseSize.z + topOffset;
-            float centerY = topOffset - height * 0.5f;
-            const float thin = 0.1f;
-            const float bottomThickness = 0.5f;
+            
+            LevelUtils.GetPuzzleViewAndWalls(baseSize, topOffset, _cameraEdgeOffset, _cameraPositionOffset,
+                out float cameraFarClipPlane, out float cameraOrthoSize, out Vector3 cameraPosition,
+                out (Vector3 pos, Vector3 scale)[] puzzleWallsDefs);
+            
+            _sceneCamera.farClipPlane = cameraFarClipPlane;
+            _sceneCamera.orthographicSize = cameraOrthoSize;
+            _sceneCamera.transform.position = cameraPosition;
 
-
-            _sceneCamera.farClipPlane = height;
-            _sceneCamera.orthographicSize = (Math.Max(baseSize.x, baseSize.y) + _cameraEdgeOffset) / 2f;
-            _sceneCamera.transform.position = new Vector3(_cameraPositionOffset.x, topOffset, _cameraPositionOffset.y);
-
-            var defs = new (Vector3 pos, Vector3 scale)[]
+            for (int i = 0; i < puzzleWallsDefs.Length; i++)
             {
-                // Top
-                (new Vector3(0f, topOffset, 0f), new Vector3(baseSize.x, thin, baseSize.y)),
-                // Bottom
-                (new Vector3(0f, topOffset - height - bottomThickness / 2, 0f),
-                    new Vector3(baseSize.x, bottomThickness, baseSize.y)),
-                // Side front (positive Z)
-                (new Vector3(0f, centerY, halfDepth + thin / 2), new Vector3(baseSize.x, height, thin)),
-                // Side back (negative Z)
-                (new Vector3(0f, centerY, -halfDepth - thin / 2), new Vector3(baseSize.x, height, thin)),
-                // Side right (positive X)
-                (new Vector3(halfWidth + thin / 2, centerY, 0f), new Vector3(thin, height, baseSize.y)),
-                // Side left (negative X)
-                (new Vector3(-halfWidth - thin / 2, centerY, 0f), new Vector3(thin, height, baseSize.y))
-            };
-
-            for (int i = 0; i < defs.Length; i++)
-            {
-                var def = defs[i];
+                var puzzleWallsDef = puzzleWallsDefs[i];
                 GameObject wall = _puzzleWalls[i];
 
                 if (wall == null)
@@ -157,9 +135,9 @@ namespace Game.Editor
                         wall.transform.SetParent(_puzzleObjectHolder.transform, false);
                 }
 
-                wall.transform.localPosition = def.pos;
+                wall.transform.localPosition = puzzleWallsDef.pos;
                 wall.transform.localRotation = Quaternion.identity;
-                wall.transform.localScale = def.scale;
+                wall.transform.localScale = puzzleWallsDef.scale;
 
                 // ensure collider exists
                 if (wall.GetComponent<Collider>() == null)

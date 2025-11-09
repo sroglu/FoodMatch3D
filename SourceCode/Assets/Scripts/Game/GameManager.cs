@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
     
     #region Properties
     
+    //Scene References
+    [SerializeField] private Transform _levelObjectSpawnPoint;
+    
+    //DataStores
     private DataStoreManager _dataStoreManager;
 
     //Pages
