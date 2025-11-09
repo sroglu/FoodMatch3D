@@ -60,7 +60,16 @@ public interface IDataStoreDatabase : IDisposable { }
         public void Dispose() => IDataStoreDatabase<T>.Destroy(); 
         public static bool IsInitialized => IDataStoreDatabase<T>._initialized;
         
-        public static void Initialize()=>IDataStoreDatabase<T>.Initialize();
+        public static void Initialize()
+        {
+            IDataStoreDatabase<T>.Initialize();
+            
+            if (IDataStoreDatabase<T>._instance is DataStoreClass<T> inst)
+            {
+                inst.OnInitialized();
+            }
+        }
+        protected virtual void OnInitialized(){}
     }
     [Serializable]
     public abstract record DataStoreRecord<T> : IDataStoreDatabase<T> where T : IDataStoreDatabase<T>, new()
@@ -69,6 +78,16 @@ public interface IDataStoreDatabase : IDisposable { }
         public void Dispose() => IDataStoreDatabase<T>.Destroy(); 
         public static bool IsInitialized => IDataStoreDatabase<T>._initialized;
         
-        public static void Initialize()=>IDataStoreDatabase<T>.Initialize();
+        public static void Initialize()
+        {
+            IDataStoreDatabase<T>.Initialize();
+            
+            if (IDataStoreDatabase<T>._instance is DataStoreRecord<T> inst)
+            {
+                inst.OnInitialized();
+            }
+        }
+
+        protected virtual void OnInitialized(){}
     }
 }

@@ -12,10 +12,10 @@ public class DashboardPageController : Controller<DashboardPageView, DashboardPa
 
     protected override void OnCreate()
     {
-        InstanceManager.Instance.ClearAllInstances();
     }
 
     public void LoadLevel()
     {
+        
     }
 }

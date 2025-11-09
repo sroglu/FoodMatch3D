@@ -3,13 +3,6 @@ using UnityEngine;
 
 namespace Game.Data
 {
-    /*[Serializable]
-    public class Level
-    {
-        public string Name;
-        public LevelId Id;
-        public PuzzleObject[] PuzzleObjects;
-    }*/
 
     [Serializable]
     public class PuzzleObject

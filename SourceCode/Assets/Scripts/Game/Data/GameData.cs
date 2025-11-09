@@ -34,14 +34,25 @@ namespace Game.Data
     [CreateAssetMenu(fileName = nameof(GameData), menuName = "Game/GameData", order = 1)]
     public class GameData : ScriptableObject
     {
+        public static readonly uint InitialSlotCountForMerge = 7;
+        public static readonly uint MaxSlotIncrementAmount = 1;
         public static readonly int MatchCountToClear = 3;
         public static int LastLevelId = 5;
+        
+        [Header("Rewards"), Space(5)] [SerializeField] 
+        private uint _levelCompleteRewardCoins = 100;
         
         [Header("Puzzle Objects"), Space(5)] [SerializeField] 
         private PuzzleObjectViewData[] _puzzleObjects;
         
         [Header("Customers"), Space(5)] [SerializeField] 
         private CustomerViewData[] _customers;
+
+        #region Getters
+
+        public  uint LevelCompleteRewardCoins => _levelCompleteRewardCoins;
+
+        #endregion
         
         public bool TryGetPuzzleObjectViewData(uint typeId, out PuzzleObjectViewData puzzleObjectViewData)
         {

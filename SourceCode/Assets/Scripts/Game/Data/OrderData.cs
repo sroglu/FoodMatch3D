@@ -4,9 +4,9 @@ namespace Game.Data
 {
     public class OrderData : ICloneable
     {
-        public int CustomerId;
-        public int OrderId;
-        public int Quantity;
+        public uint CustomerId;
+        public uint OrderId;
+        public uint Quantity;
         public object Clone()
         {
             return MemberwiseClone();

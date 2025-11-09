@@ -4,7 +4,7 @@ namespace Game.Widgets.OrderWidget
 {
     public class OrderWidgetController : Controller<OrderWidgetView, OrderWidgetModel>
     {
-        public OrderWidgetController(ControllerType controllerType, OrderWidgetModel model, OrderWidgetView view = null) : base(controllerType, model, view)
+        public OrderWidgetController(OrderWidgetModel model, OrderWidgetView view = null) : base(ControllerType.Instance, model, view)
         {
         }
     }

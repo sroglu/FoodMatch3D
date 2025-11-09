@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour
         GameDataStore.Instance.SetGameData(gameData);
     }
 
-
     private void Start()
     {
         InitPages();
@@ -53,21 +52,17 @@ public class GameManager : MonoBehaviour
 
     private void InitPages()
     {
-        var playerData = new PlayerData()
+        dashboardPage = new DashboardPageController(new DashboardPageModel(new DashboardPageData()));
+        if (GameDataStore.Instance.CurrentLevelId == 0)
         {
-            Name = PlayerPrefs.GetString(PlayerPrefsKeys.PlayerNameKey, "New Player"),
-            CurrentLevelId = new LevelId(PlayerPrefs.GetInt(PlayerPrefsKeys.PlayerLevelKey, 0)),
-            Coins = (uint)PlayerPrefs.GetInt(PlayerPrefsKeys.PlayerCoinsKey, 0),
-            SoundOn = PlayerPrefs.GetInt(PlayerPrefsKeys.SoundVolumeKey, 1) == 1,
-            MusicOn = PlayerPrefs.GetInt(PlayerPrefsKeys.MusicVolumeKey, 1) == 1,
-            IsTutorialCompleted = PlayerPrefs.GetInt(PlayerPrefsKeys.IsTutorialCompletedKey, 0) == 1
-        };
-        dashboardPage = new DashboardPageController(new DashboardPageModel(new DashboardPageData(playerData)));
-        
+            //Player is new, start from level 1
+            //Tutorial can be handled here if needed
+            LoadLevel(new LevelId(1));
+        }
         
     }
     
-    public void LoadLevel(LevelId levelId)
+    private void LoadLevel(LevelId levelId)
     {
         var level = LevelUtils.LoadLevel(levelId);
         gamePage = new GamePageController(new GamePageModel(new GamePageData(level)));
@@ -77,13 +72,22 @@ public class GameManager : MonoBehaviour
         gamePage.View.UpdateView();
     }
     
-    public void ReturnToDashboard()
+    public void CompleteLevel(bool isSuccess)
     {
+        if (isSuccess)
+        {
+            GameDataStore.Instance.UpdatePlayerDataOnLevelComplete();
+        }
+        
+        ReturnToDashboard();
+    }
+    private void ReturnToDashboard()
+    {
+        dashboardPage.View.UpdateView();
         dashboardPage.ShowView();
         gamePage.HideView();
         gamePage.Dispose();
     }
-
 
 
     void OnApplicationQuit()
