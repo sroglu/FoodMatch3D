@@ -32,12 +32,12 @@ namespace Game.Editor
         /// <summary>
         /// These variables can be stored GameData by a preset id, but we need odin serializer for that, and it's overkill for now
         /// </summary>
-        private Vector3 _objectSpawnRoot;
+        private Vector3 _objectSpawnRoot = new Vector3(0f, 1f, 0f);
 
         private float _waitDurationAfterThrow = 1f;
         private float _throwSpeed = 5f;
         private Vector3 coneAxisToThrow = Vector3.down;
-        private float maxAngleDegToThrow = 30f;
+        private float maxAngleDegToThrow = 45f;
 
         private LevelData _currentLevelData;
         private GameData _gameData;
@@ -45,10 +45,10 @@ namespace Game.Editor
         private bool _enteringPlayModeToThrow = false;
         private bool _throwingInProgress = false;
 
-        private Vector3 _baseSize = new Vector3(.9f, 1.6f, 1f);
+        private Vector3 _baseSize = new Vector3(1.75f, 2.35f, 1f);
         private float _topOffset = 1f;
-        private float _cameraEdgeOffset = 1.2f;
-        private Vector2 _cameraPositionOffset = new Vector2(0f, 0.3f);
+        private float _cameraEdgeOffset = 0.75f;
+        private Vector2 _cameraPositionOffset = new Vector2(0f, -0.1f);
 
 
         private static Dictionary<PuzzleObject, List<Rigidbody>> _placedPuzzleObjects = new();
@@ -258,7 +258,7 @@ namespace Game.Editor
             ClearScene();
             foreach (var puzzleObjectData in _currentLevelData.PuzzleObjects)
             {
-                if(puzzleObjectData != null)
+                if(puzzleObjectData == null)
                     continue;
                 
                 if (!_gameData.TryGetPuzzleObjectViewData(

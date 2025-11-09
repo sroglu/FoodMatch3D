@@ -63,6 +63,11 @@ namespace Game.Editor
             }
 
             _levelIndex = EditorGUILayout.IntField("Level Index", _levelIndex);
+            if(_levelIndex >0 && _levelIndex != _levelToSave.Id.Value)
+            {
+                Debug.LogWarning("Level ID changed to match the specified Level Index.");
+                _levelToSave.Id = new LevelId(_levelIndex);
+            }
 
             if (GUILayout.Button("Save Level"))
             {

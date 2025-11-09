@@ -51,7 +51,7 @@ MonoBehaviour:
     Sprite: {fileID: 0}
   - Name: PuzzleObject 9
     TypeId: 9
-    Prefab: {fileID: 382461657742294077, guid: 1c8f0a6bd731dbb42811827e4488f4c6, type: 3}
+    Prefab: {fileID: 5267025017366522645, guid: 0e4eb0320d0e0554c9f9ccd42cf02473, type: 3}
     Sprite: {fileID: 0}
   - Name: PuzzleObject 10
     TypeId: 10
