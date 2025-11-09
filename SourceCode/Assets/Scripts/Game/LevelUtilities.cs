@@ -39,7 +39,7 @@ namespace Game
 
         //Wall Builder
         
-        private static readonly string[] _puzzleWallNames = new[]
+        public static readonly string[] PuzzleWallNames = new[]
         {
             "PuzzleWall_Top",
             "PuzzleWall_Bottom",

@@ -146,6 +146,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6662637616539864563}
+  - component: {fileID: 6176845176008991752}
   m_Layer: 0
   m_Name: beef_2_03_PRE
   m_TagString: Untagged
@@ -169,3 +170,19 @@ Transform:
   - {fileID: 1771858034744712650}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6176845176008991752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6286357883142788937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4933a21fa45f43658eff852984c64b41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TypeId: 0
+  InitialLocalPosition: {x: 0, y: 0, z: 0}
+  InitialLocalRotation: {x: 0, y: 0, z: 0, w: 0}
+  InitialLocalScale: {x: 1, y: 1, z: 1}

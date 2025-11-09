@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Constants;
 using Game.Data;
+using Game.Instances.PuzzleInstances;
 using mehmetsrl.DataStore;
 using UnityEngine;
 
@@ -14,14 +15,11 @@ namespace Game.DataStores
     public class GameDataStore : DataStoreClass<GameDataStore>
     {
         public int CurrentLevelId => _playerData.CurrentLevelId.Value;
-        public Data.GameData GameData { get; private set; }
-
+        public GameData GameData { get; private set; }
         private PlayerData _playerData;
-
-        public Queue<GameActionData> GameActionQueue { get; } = new();
-
-        private IReadOnlyList<PuzzleObjectInstanceData> _puzzleObjects = Array.Empty<PuzzleObjectInstanceData>();
-        public IReadOnlyList<PuzzleObjectInstanceData> PuzzleObjects => _puzzleObjects;
+        private Queue<GameActionData> gameActionQueue { get; } = new();
+        private IReadOnlyList<PuzzleObjectInstance> _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
+        public IReadOnlyList<PuzzleObjectInstance> PuzzleObjects => _puzzleObjects;
 
         protected override void OnInitialized()
         {
@@ -40,6 +38,23 @@ namespace Game.DataStores
         {
             GameData = gameData;
         }
+        
+        public void AddGameAction(GameActionData actionData)
+        {
+            gameActionQueue.Enqueue(actionData);
+        }
+
+        public bool TryAddGameAction(out GameActionData actionData)
+        {
+            if (gameActionQueue.Count == 0)
+            {
+                actionData = default;
+                return false;
+            }
+
+            actionData = gameActionQueue.Dequeue();
+            return true;
+        }
 
         public void UpdatePlayerDataOnLevelComplete()
         {
@@ -51,18 +66,31 @@ namespace Game.DataStores
             PlayerPrefs.Save();
         }
 
-        public void SetSlotState(IEnumerable<PuzzleObjectInstanceData> items)
+        public bool TryUseCoinsOnKeepPlaying()
+        {
+            if (_playerData.Coins < GameData.KeepPlayingCostCoins)
+            {
+                return false;
+            }
+            
+            _playerData.Coins -= GameData.KeepPlayingCostCoins;
+            PlayerPrefs.SetInt(PlayerPrefsKeys.PlayerCoinsKey, (int)_playerData.Coins);
+            PlayerPrefs.Save();
+            return true;
+        }
+
+        public void SetSlotMatchState(IEnumerable<PuzzleObjectInstance> items)
         {
             if (items == null)
             {
-                _puzzleObjects = Array.Empty<PuzzleObjectInstanceData>();
+                _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
                 return;
             }
 
-            var copy = new List<PuzzleObjectInstanceData>(items);
+            var copy = new List<PuzzleObjectInstance>(items);
             if (copy.Count == 0)
             {
-                _puzzleObjects = Array.Empty<PuzzleObjectInstanceData>();
+                _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
                 return;
             }
 

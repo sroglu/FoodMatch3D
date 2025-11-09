@@ -118,6 +118,8 @@ namespace mehmetsrl.MVC.core
         }
         void UpdateCurrentData(T[] dataArr)
         {
+            if(CurrentDataArr == null || CurrentDataArr.Length != dataArr.Length)
+                CurrentDataArr = new T[dataArr.Length];
             Array.Copy(dataArr, CurrentDataArr, dataArr.Length);
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Data;
 using Game.DataStores;
 using Game.Instances.ActionButton;
+using Game.Instances.PuzzleInstances;
 using mehmetsrl.MVC.core;
 
 namespace Game.Widgets.MatchWidget
@@ -10,7 +11,7 @@ namespace Game.Widgets.MatchWidget
     {
         private readonly Dictionary<ActionButtonView, ActionButtonController> _actionButtonControllers = new();
         
-        private readonly List<PuzzleObjectInstanceData> _slots = new();
+        private readonly List<PuzzleObjectInstance> _slots = new();
         
         public MatchBoardController(MatchBoardModel model, MatchBoardView view = null) : base(ControllerType.Instance, model, view)
         {
@@ -30,26 +31,26 @@ namespace Game.Widgets.MatchWidget
         }
         
 
-        public void AddToMatchBoard(PuzzleObjectInstanceData puzzleObjectInstanceData)
+        public void AddToMatchBoard(PuzzleObjectInstance puzzleObjectInstance)
         {
-            if (puzzleObjectInstanceData == null) return;
+            if (puzzleObjectInstance == null) return;
 
             // Find last index of same type to insert next to existing block
             int lastIndex = -1;
             for (int i = 0; i < _slots.Count; i++)
             {
-                if (_slots[i].TypeId == puzzleObjectInstanceData.TypeId) lastIndex = i;
+                if (_slots[i].TypeId == puzzleObjectInstance.TypeId) lastIndex = i;
             }
 
             int insertIndex = lastIndex >= 0 ? lastIndex + 1 : _slots.Count;
-            _slots.Insert(insertIndex, puzzleObjectInstanceData);
+            _slots.Insert(insertIndex, puzzleObjectInstance);
 
             // Scan contiguous block of same type around the inserted index
             int left = insertIndex;
-            while (left - 1 >= 0 && _slots[left - 1].TypeId == puzzleObjectInstanceData.TypeId) left--;
+            while (left - 1 >= 0 && _slots[left - 1].TypeId == puzzleObjectInstance.TypeId) left--;
 
             int right = insertIndex;
-            while (right + 1 < _slots.Count && _slots[right + 1].TypeId == puzzleObjectInstanceData.TypeId) right++;
+            while (right + 1 < _slots.Count && _slots[right + 1].TypeId == puzzleObjectInstance.TypeId) right++;
 
             int matchCount = right - left + 1;
             if (matchCount >= GameData.MatchCountToClear)
@@ -57,7 +58,7 @@ namespace Game.Widgets.MatchWidget
                 _slots.RemoveRange(left, matchCount);
             }
             
-            GameDataStore.Instance.SetSlotState(_slots);
+            GameDataStore.Instance.SetSlotMatchState(_slots);
             View.UpdateView();
         }
 

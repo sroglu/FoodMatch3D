@@ -5,7 +5,7 @@ namespace Game.Data
 {
 
     [Serializable]
-    public class PuzzleObject
+    public class PuzzleObjectSerializationData
     {
         public uint TypeId;
         public uint Quantity;
@@ -13,13 +13,41 @@ namespace Game.Data
         public Quaternion[] Rotations;
         public override int GetHashCode()
         {
-            return HashCode.Combine(TypeId, Quantity);
+            HashCode hash = new HashCode();
+            hash.Add(TypeId);
+            hash.Add(Quantity);
+            if (Positions != null)
+            {
+                foreach (var pos in Positions)
+                {
+                    hash.Add(pos);
+                }
+            }
+            else
+            {
+                hash.Add(0);
+            }
+
+            if (Rotations != null)
+            {
+                foreach (var rot in Rotations)
+                {
+                    hash.Add(rot);
+                }
+            }
+            else
+            {
+                hash.Add(0);
+            }
+
+            return hash.ToHashCode();
         }
     }
     
     [Serializable]
     public class CameraData
     {
+        public int SecondsToSolve;
         public Vector3 Position;
         public Quaternion Rotation;
         public float OrthographicSize;
@@ -30,7 +58,7 @@ namespace Game.Data
     public class LevelData
     {
         public LevelId Id;
-        public PuzzleObject[] PuzzleObjects;
+        public PuzzleObjectSerializationData[] PuzzleObjects;
         public CameraData CameraData;
     }
 }

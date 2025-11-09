@@ -1,3 +1,5 @@
+using Game.Data;
+using Game.DataStores;
 using Game.Widgets.MatchWidget;
 using Game.Widgets.OrderWidget;
 using mehmetsrl.MVC.core;
@@ -17,11 +19,17 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
 
     protected override void OnCreate()
     {
-        _orderWidgetController = new OrderWidgetController(View.OrderWidgetView.Model, View.OrderWidgetView);
+        var orderData = new OrderData[Model.CurrentData.Level.PuzzleObjects.Length];
+        for (int i = 0; i < orderData.Length; i++)
+        {
+            var existingPuzzleObject = Model.CurrentData.Level.PuzzleObjects[i];
+            
+            //Get random customer type id for this puzzle object without using GameDataStore
+            var customerTypeId = GameDataStore.Instance.GameData.GetRandomCustomerTypeId();
+            orderData[i] = new OrderData(customerTypeId, existingPuzzleObject.TypeId, existingPuzzleObject.Quantity);
+        }
+        _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(orderData), View.OrderWidgetView);
         _matchBoardController = new MatchBoardController(View.MatchBoardView.Model, View.MatchBoardView);
     }
-
-    public void LoadLevel()
-    {
-    }
+    
 }

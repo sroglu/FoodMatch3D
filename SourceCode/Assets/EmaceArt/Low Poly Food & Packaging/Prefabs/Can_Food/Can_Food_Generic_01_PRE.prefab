@@ -146,6 +146,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7823256187241803956}
+  - component: {fileID: 2549440741709858998}
   m_Layer: 0
   m_Name: Can_Food_Generic_01_PRE
   m_TagString: Untagged
@@ -169,3 +170,19 @@ Transform:
   - {fileID: 8847309854639277500}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2549440741709858998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7483323009921247758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea8d33865c6542fcb82ca826acd6d609, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TypeId: 0
+  InitialLocalPosition: {x: 0, y: 0, z: 0}
+  InitialLocalRotation: {x: 0, y: 0, z: 0, w: 0}
+  InitialLocalScale: {x: 1, y: 1, z: 1}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Instances.PuzzleInstances;
 using UnityEngine;
 
 namespace Game.Data
@@ -11,7 +12,7 @@ namespace Game.Data
     {
         [HideInInspector] public string Name;
         public uint TypeId;
-        public GameObject Prefab;
+        public PuzzleObjectInstance Prefab;
         public Sprite Sprite;
         public object Clone()
         {
@@ -34,6 +35,15 @@ namespace Game.Data
     [CreateAssetMenu(fileName = nameof(GameData), menuName = "Game/GameData", order = 1)]
     public class GameData : ScriptableObject
     {
+        #region Puzzle Constants
+
+        public static readonly Vector3 BaseSize = new Vector3(1.75f, 2.35f, 1f);
+        public static readonly float TopOffset = 1f;
+        public static readonly float CameraEdgeOffset = 0.75f;
+        public static readonly Vector2 CameraPositionOffset = new Vector2(0f, -0.1f);
+
+        #endregion
+        
         public static readonly uint InitialSlotCountForMerge = 7;
         public static readonly uint MaxSlotIncrementAmount = 1;
         public static readonly int MatchCountToClear = 3;
@@ -41,6 +51,7 @@ namespace Game.Data
         
         [Header("Rewards"), Space(5)] [SerializeField] 
         private uint _levelCompleteRewardCoins = 100;
+        private uint _keepPlayingCostCoins = 500;
         
         [Header("Puzzle Objects"), Space(5)] [SerializeField] 
         private PuzzleObjectViewData[] _puzzleObjects;
@@ -50,7 +61,8 @@ namespace Game.Data
 
         #region Getters
 
-        public  uint LevelCompleteRewardCoins => _levelCompleteRewardCoins;
+        public uint LevelCompleteRewardCoins => _levelCompleteRewardCoins;
+        public uint KeepPlayingCostCoins => _keepPlayingCostCoins;
 
         #endregion
         
@@ -77,6 +89,16 @@ namespace Game.Data
                 typeIds[i] = _puzzleObjects[i].TypeId;
             }
             return typeIds;
+        }
+        
+        
+        public uint GetRandomCustomerTypeId()
+        {
+            if (_customers.Length == 0)
+                throw new InvalidOperationException("No customers available in GameData.");
+
+            var randomIndex = UnityEngine.Random.Range(0, _customers.Length);
+            return _customers[randomIndex].TypeId;
         }
         
         public bool TryGetCustomerViewData(uint typeId, out CustomerViewData customerViewData)

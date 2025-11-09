@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using DG.Tweening;
+using Game.Data;
 using Game.DataStores;
 using mehmetsrl.MVC.core;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Widgets.OrderWidget
@@ -10,33 +13,78 @@ namespace Game.Widgets.OrderWidget
         [SerializeField]
         private RectTransform _slotsParent;
 
-        private readonly Dictionary<int, (RectTransform,CustomerController)> _slots = new();
+        
+        public int OrderLimitAtTheSameTime => _slotsParent.childCount;
+        
+        private readonly Dictionary<int,CustomerController> _instantiatedCustomers = new();
 
         protected override void OnCreate()
         {
             Debug.Assert(_slotsParent != null);
-            for (int i = 0; i < _slotsParent.childCount; i++)
-            {
-                RectTransform slot = _slotsParent.GetChild(i) as RectTransform;
-                if (slot != null)
-                {
-                    if(!GameDataStore.Instance.GameData.TryGetCustomerViewData(Model.CurrentDataArr[i].CustomerId, out var customerViewData))
-                    {
-                        Debug.LogError($"Customer View Data not found for CustomerId: {Model.CurrentDataArr[i].CustomerId}");
-                        continue;
-                    }
+        }
 
-                    var orderData = Model.CurrentDataArr[i];
-                    var customerController = InstanceManager.Instance.CreateCustomer(customerViewData);
-                    customerController.View.transform.SetParent(slot);
-                    customerController.View.transform.localPosition = Vector3.zero;
-                    _slots.Add(i, (slot, customerController));
+        /*public void LoadOrders(OrderData[] orderDataArr)
+        {
+            for (int i = 0; i < orderDataArr.Length; i++)
+            {
+                var orderData = orderDataArr[i];
+                Debug.Assert(!orderData.IsCompleted);
+                
+                if (!GameDataStore.Instance.GameData.TryGetCustomerViewData(orderData.CustomerId,
+                        out var customerViewData))
+                {
+                    Debug.LogError($"Customer View Data not found for CustomerId: {orderData.CustomerId}");
+                    continue;
                 }
+
+                RectTransform slot = _slotsParent.GetChild(i) as RectTransform;
+                var customerController = InstanceManager.Instance.CreateCustomer(customerViewData);
+                customerController.View.transform.SetParent(slot);
+                customerController.View.transform.localPosition = Vector3.zero;
+                customerController.SetOrder(orderData.OrderId, orderData.Quantity);
+            }
+        }*/
+
+        public void UpdateOrders((int,OrderData)[] orderDataArr)
+        {
+            for (int i = 0; i < orderDataArr.Length; i++)
+            {
+                var (orderIndex, orderData) = orderDataArr[i];
+                Debug.Assert(!orderData.IsCompleted);
+                
+                if (!GameDataStore.Instance.GameData.TryGetCustomerViewData(orderData.CustomerId,
+                        out var customerViewData))
+                {
+                    Debug.LogError($"Customer View Data not found for CustomerId: {orderData.CustomerId}");
+                    continue;
+                }
+
+                RectTransform slot = _slotsParent.GetChild(i) as RectTransform;
+
+                if (!_instantiatedCustomers.TryGetValue(orderIndex, out var customerController))
+                {
+                    customerController = InstanceManager.Instance.CreateCustomer(customerViewData);
+                }
+                
+                customerController.View.transform.SetParent(slot);
+                customerController.View.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack)
+                    .SetLink(customerController.View.gameObject);
+                customerController.SetOrder(orderData.OrderId, orderData.Quantity);
+            }
+        }
+     /*   
+        private void UpdateOrdersSlots(){
+            for (int i = 0; i < Model.OrderCount; i++)
+            {
+                var (slot, customerController) = _slots[i];
+                customerController.View.transform.SetParent(slot);
+                customerController.View.transform.localPosition = Vector3.zero;
             }
         }
 
         private void UpdateOrders()
         {
+            bool anyOrderEnded = false;
             for (int i = 0; i < Model.OrderCount; i++)
             {
                 // Update slot with orderData
@@ -49,8 +97,13 @@ namespace Game.Widgets.OrderWidget
                 else
                 {
                     EndOrder(i);
+                    anyOrderEnded = true;
                 }
-                
+            }
+
+            if (anyOrderEnded)
+            {
+                UpdateOrdersSlots();
             }
         }
         
@@ -70,10 +123,10 @@ namespace Game.Widgets.OrderWidget
             //clear last slot
             customerControllerToEnd.EndOrder();
         }
-
+*/
         public override void UpdateView()
         {
-            UpdateOrders();
+            //UpdateOrders();
         }
     }
 }

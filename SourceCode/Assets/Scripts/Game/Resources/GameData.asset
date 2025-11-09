@@ -12,54 +12,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b00013145b701db41b029002b9bc2c74, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
+  _levelCompleteRewardCoins: 100
   _puzzleObjects:
   - Name: PuzzleObject 0
     TypeId: 0
-    Prefab: {fileID: 4264321146886191, guid: b3560466dd29e434280b188c40a48ee7, type: 3}
+    Prefab: {fileID: 3563070742421640488, guid: b3560466dd29e434280b188c40a48ee7, type: 3}
     Sprite: {fileID: -1264479247, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 1
     TypeId: 1
-    Prefab: {fileID: 7483323009921247758, guid: 7325f880c7f17f24886f7d8ae2e0517e, type: 3}
+    Prefab: {fileID: 2549440741709858998, guid: 7325f880c7f17f24886f7d8ae2e0517e, type: 3}
     Sprite: {fileID: 1065893375, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 2
     TypeId: 2
-    Prefab: {fileID: 4524442883534929880, guid: 842ce788a040526489cd3b466a04babb, type: 3}
+    Prefab: {fileID: 174641691272876342, guid: 842ce788a040526489cd3b466a04babb, type: 3}
     Sprite: {fileID: -467481321, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 3
     TypeId: 3
-    Prefab: {fileID: 1726331327562803510, guid: 4db78d520d118f249893944c02bd2e64, type: 3}
+    Prefab: {fileID: 9085564020795573916, guid: 4db78d520d118f249893944c02bd2e64, type: 3}
     Sprite: {fileID: -624146122, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 4
     TypeId: 4
-    Prefab: {fileID: 3009642661777731658, guid: f63cc1e1f1fcccd4c92c44d295f79aff, type: 3}
+    Prefab: {fileID: 6194033084838097079, guid: f63cc1e1f1fcccd4c92c44d295f79aff, type: 3}
     Sprite: {fileID: 1054265530, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 5
     TypeId: 5
-    Prefab: {fileID: 6286357883142788937, guid: 5f628220448241948ba90aee77765577, type: 3}
+    Prefab: {fileID: 6176845176008991752, guid: 5f628220448241948ba90aee77765577, type: 3}
     Sprite: {fileID: 1614834820, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 6
     TypeId: 6
-    Prefab: {fileID: 350598537094450971, guid: 77179bf2d3fe1ae46883890b806c2374, type: 3}
+    Prefab: {fileID: 1190395890714116093, guid: 77179bf2d3fe1ae46883890b806c2374, type: 3}
     Sprite: {fileID: 1001591590, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 7
     TypeId: 7
-    Prefab: {fileID: 1047646439917679130, guid: e4bcca47a54b6074db840fee2bdec8e9, type: 3}
+    Prefab: {fileID: 7510481004401486134, guid: e4bcca47a54b6074db840fee2bdec8e9, type: 3}
     Sprite: {fileID: 1512721004, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 8
     TypeId: 8
-    Prefab: {fileID: 5709721745250619801, guid: c708fcdce4242734ea6a98fc22ddf119, type: 3}
+    Prefab: {fileID: 3952672336903273788, guid: c708fcdce4242734ea6a98fc22ddf119, type: 3}
     Sprite: {fileID: 809056391, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 9
     TypeId: 9
-    Prefab: {fileID: 5267025017366522645, guid: 0e4eb0320d0e0554c9f9ccd42cf02473, type: 3}
+    Prefab: {fileID: 451363400088324177, guid: 0e4eb0320d0e0554c9f9ccd42cf02473, type: 3}
     Sprite: {fileID: -1532410848, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 10
     TypeId: 10
-    Prefab: {fileID: 7709045051502474854, guid: cbaeec49a4aefc74b880761ce0e3f87b, type: 3}
+    Prefab: {fileID: 1798690450709525016, guid: cbaeec49a4aefc74b880761ce0e3f87b, type: 3}
     Sprite: {fileID: 557136251, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 11
     TypeId: 11
-    Prefab: {fileID: 251387014131026436, guid: 84e8d6b18de8a1e49ac42b65ba6abad4, type: 3}
+    Prefab: {fileID: 1414069204001092150, guid: 84e8d6b18de8a1e49ac42b65ba6abad4, type: 3}
     Sprite: {fileID: 338784829, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   _customers:
   - Name: Customer 0

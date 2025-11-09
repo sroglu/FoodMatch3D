@@ -19,22 +19,13 @@ namespace Game.Editor
         private static GameObject _puzzleObjectHolder;
         private static readonly GameObject[] _puzzleWalls = new GameObject[6];
 
-        private static readonly string[] _puzzleWallNames = new[]
-        {
-            "PuzzleWall_Top",
-            "PuzzleWall_Bottom",
-            "PuzzleWall_Side1",
-            "PuzzleWall_Side2",
-            "PuzzleWall_Side3",
-            "PuzzleWall_Side4"
-        };
+
 
         /// <summary>
         /// These variables can be stored GameData by a preset id, but we need odin serializer for that, and it's overkill for now
         /// </summary>
         private Vector3 _objectSpawnRoot = new Vector3(0f, 1f, 0f);
 
-        private float _waitDurationAfterThrow = 1f;
         private float _throwSpeed = 5f;
         private Vector3 coneAxisToThrow = Vector3.down;
         private float maxAngleDegToThrow = 45f;
@@ -45,13 +36,13 @@ namespace Game.Editor
         private bool _enteringPlayModeToThrow = false;
         private bool _throwingInProgress = false;
 
-        private Vector3 _baseSize = new Vector3(1.75f, 2.35f, 1f);
-        private float _topOffset = 1f;
-        private float _cameraEdgeOffset = 0.75f;
-        private Vector2 _cameraPositionOffset = new Vector2(0f, -0.1f);
+        private Vector3 _baseSize = GameData.BaseSize;
+        private float _topOffset = GameData.TopOffset;
+        private float _cameraEdgeOffset = GameData.CameraEdgeOffset;
+        private Vector2 _cameraPositionOffset = GameData.CameraPositionOffset;
 
 
-        private static Dictionary<PuzzleObject, List<Rigidbody>> _placedPuzzleObjects = new();
+        private static Dictionary<PuzzleObjectSerializationData, List<Rigidbody>> _placedPuzzleObjects = new();
 
         private Vector2 _mainScrollPos;
 
@@ -71,12 +62,16 @@ namespace Game.Editor
             {
                 _gameLevelRoot = new GameObject("GameLevelRoot");
             }
+            _gameLevelRoot.transform.position = Vector3.zero;
+            _gameLevelRoot.transform.rotation = Quaternion.identity;
 
             _puzzleObjectHolder = GameObject.Find("PuzzleObjectHolder");
             if (_puzzleObjectHolder == null)
             {
                 _puzzleObjectHolder = new GameObject("PuzzleObjectHolder");
             }
+            _puzzleObjectHolder.transform.position = Vector3.zero;
+            _puzzleObjectHolder.transform.rotation = Quaternion.identity;
 
             for (int i = _gameLevelRoot.transform.childCount - 1; i >= 0; i--)
             {
@@ -86,10 +81,10 @@ namespace Game.Editor
 
             for (int i = 0; i < _puzzleWalls.Length; i++)
             {
-                var existing = _puzzleObjectHolder.transform.Find(_puzzleWallNames[i]);
+                var existing = _puzzleObjectHolder.transform.Find(LevelUtils.PuzzleWallNames[i]);
                 if (!existing)
                 {
-                    Debug.LogError($"PuzzleObject {_puzzleWallNames[i]} not found");
+                    Debug.LogError($"PuzzleObject {LevelUtils.PuzzleWallNames[i]} not found");
                     return;
                 }
 
@@ -121,7 +116,7 @@ namespace Game.Editor
                 if (wall == null)
                 {
                     wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    wall.name = _puzzleWallNames[i];
+                    wall.name = LevelUtils.PuzzleWallNames[i];
                     wall.transform.SetParent(_puzzleObjectHolder.transform, false);
 
                     // remove renderer to make the wall invisible while keeping colliders
@@ -409,7 +404,6 @@ namespace Game.Editor
             GUILayout.Space(10);
             EditorGUILayout.LabelField("Object Throw Settings", EditorStyles.boldLabel);
             _objectSpawnRoot = EditorGUILayout.Vector3Field("Object Spawn Root", _objectSpawnRoot);
-            _waitDurationAfterThrow = EditorGUILayout.FloatField("Wait Duration After Throw", _waitDurationAfterThrow);
             _throwSpeed = EditorGUILayout.FloatField("Throw Speed", _throwSpeed);
             coneAxisToThrow = EditorGUILayout.Vector3Field("Throw Cone Axis", coneAxisToThrow);
             maxAngleDegToThrow = EditorGUILayout.FloatField("Max Throw Angle (deg)", maxAngleDegToThrow);
@@ -517,7 +511,7 @@ namespace Game.Editor
         }
 
 
-        private void DrawPuzzleObjects(PuzzleObject[] puzzleObjects)
+        private void DrawPuzzleObjects(PuzzleObjectSerializationData[] puzzleObjects)
         {
             int puzzleObjectCount = EditorGUILayout.IntField("Number of Puzzle Object Types", puzzleObjects.Length);
             puzzleObjectCount = Math.Max(0, puzzleObjectCount);
@@ -536,7 +530,7 @@ namespace Game.Editor
                 for (int i = 0; i < puzzleObjects.Length; i++)
                 {
                     if (puzzleObjects[i] == null)
-                        puzzleObjects[i] = new PuzzleObject();
+                        puzzleObjects[i] = new PuzzleObjectSerializationData();
                     
                     if (allowDuplicates)
                     {
@@ -566,7 +560,7 @@ namespace Game.Editor
                 for (int i = 0; i < puzzleObjects.Length; i++)
                 {
                     if (puzzleObjects[i] == null)
-                        puzzleObjects[i] = new PuzzleObject();
+                        puzzleObjects[i] = new PuzzleObjectSerializationData();
 
                     puzzleObjects[i].Quantity = (uint)Random.Range(randomRange.x, randomRange.y + 1);
                 }
@@ -581,7 +575,7 @@ namespace Game.Editor
                 if (newTypeId != oldTypeId)
                 {
                     if (puzzleObjects[i] == null)
-                        puzzleObjects[i] = new PuzzleObject();
+                        puzzleObjects[i] = new PuzzleObjectSerializationData();
                     puzzleObjects[i].TypeId = newTypeId;
                 }
 
@@ -590,7 +584,7 @@ namespace Game.Editor
                 if (newQuantity != oldQuantity)
                 {
                     if (puzzleObjects[i] == null)
-                        puzzleObjects[i] = new PuzzleObject();
+                        puzzleObjects[i] = new PuzzleObjectSerializationData();
                     puzzleObjects[i].Quantity = newQuantity;
                 }
 

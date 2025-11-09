@@ -83,6 +83,12 @@ public class InstanceManager : MonoBehaviour, IDisposable
         return instance.GetComponent<T>();
     }
     
+    public T SpawnWithoutPool<T>(PooledObjectBehaviour pooledObject) where T : PooledObjectBehaviour
+    {
+        var instance = Instantiate(pooledObject);
+        return instance.GetComponent<T>();
+    }
+    
     
     public void ReturnInstance(PooledObjectBehaviour pooledObjectBehaviour)
     {

@@ -37,7 +37,7 @@ namespace Game.Editor
             if (puzzleObjectTypeCount < 0) puzzleObjectTypeCount = 0;
             if (_levelData.PuzzleObjects == null || puzzleObjectTypeCount != _levelData.PuzzleObjects.Length)
             {
-                _levelData.PuzzleObjects = new PuzzleObject[puzzleObjectTypeCount];
+                _levelData.PuzzleObjects = new PuzzleObjectSerializationData[puzzleObjectTypeCount];
             }
 
             EditorGUILayout.Space(10);
