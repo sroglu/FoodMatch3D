@@ -28,7 +28,7 @@ MonoBehaviour:
     Sprite: {fileID: -467481321, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 3
     TypeId: 3
-    Prefab: {fileID: 9085564020795573916, guid: 4db78d520d118f249893944c02bd2e64, type: 3}
+    Prefab: {fileID: 8475724781934909519, guid: 4db78d520d118f249893944c02bd2e64, type: 3}
     Sprite: {fileID: -624146122, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   - Name: PuzzleObject 4
     TypeId: 4

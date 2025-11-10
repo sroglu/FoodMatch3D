@@ -180,7 +180,8 @@ public class GameManager : MonoBehaviour
         {
             
             //TODO: Pooling can be implemented here
-            var puzzleObject = InstanceManager.Instance.SpawnWithoutPool<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
+            var puzzleObject = InstanceManager.Instance.SpawnInstance<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
+            //var puzzleObject = InstanceManager.Instance.SpawnWithoutPool<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
             puzzleObject.transform.SetParent(_puzzleObjectHolder, false);
             puzzleObject.Initialize(typeId, position, rotation, Vector3.one);
         }
