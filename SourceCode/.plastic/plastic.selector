@@ -1,4 +1,0 @@
-repository "SourceCode 2025-11-08_02-46-55/SourceCode@447033@cloud"
-  path "/"
-    br "/main"
-    co "/main"
