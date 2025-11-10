@@ -63,8 +63,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitPages();
-
-        dashboardPage.ShowView();
     }
 
     #region Page Management
@@ -78,6 +76,10 @@ public class GameManager : MonoBehaviour
             //Player is new, start from level 1
             //Tutorial can be handled here if needed
             LoadLevel(new LevelId(1));
+        }
+        else
+        {
+            dashboardPage.ShowView();
         }
         
     }
@@ -139,6 +141,9 @@ public class GameManager : MonoBehaviour
         GameCamera.farClipPlane = cameraFarClipPlane;
         GameCamera.orthographicSize = cameraOrthoSize;
         GameCamera.transform.position = cameraPosition;
+
+        _worldCanvas.transform.localPosition = new Vector3(0,0,cameraFarClipPlane/2f);
+        _worldCanvas.transform.localScale = Vector3.one * cameraOrthoSize / 1000f;
         
         for (int i = 0; i < puzzleWallsDefs.Length; i++)
         {
@@ -178,10 +183,7 @@ public class GameManager : MonoBehaviour
     {
         if (GameDataStore.Instance.GameData.TryGetPuzzleObjectViewData(typeId, out var puzzleObjectViewData))
         {
-            
-            //TODO: Pooling can be implemented here
             var puzzleObject = InstanceManager.Instance.SpawnInstance<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
-            //var puzzleObject = InstanceManager.Instance.SpawnWithoutPool<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
             puzzleObject.transform.SetParent(_puzzleObjectHolder, false);
             puzzleObject.Initialize(typeId, position, rotation, Vector3.one);
         }

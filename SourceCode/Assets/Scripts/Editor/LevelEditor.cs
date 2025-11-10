@@ -202,7 +202,11 @@ namespace Game.Editor
                     var collider = wall.GetComponent<Collider>();
                     if (collider != null)
                     {
-                        Handles.DrawWireCube(collider.bounds.center, collider.bounds.size);
+                        // local center -> world center
+                        Vector3 worldCenter = wall.transform.TransformPoint(collider.bounds.center);
+                        // local size scaled by the transform's lossyScale -> world size
+                        Vector3 worldSize = Vector3.Scale(collider.bounds.size, wall.transform.lossyScale);
+                        Handles.DrawWireCube(worldCenter, worldSize);
                     }
                 }
             }
@@ -217,9 +221,9 @@ namespace Game.Editor
                     _sceneCamera.transform.position +
                     _sceneCamera.transform.forward * (_sceneCamera.farClipPlane * 0.5f),
                     new Vector3(
-                        _sceneCamera.orthographicSize * 2f * _sceneCamera.aspect,
+                        _sceneCamera.orthographicSize,
                         _sceneCamera.farClipPlane,
-                        _sceneCamera.orthographicSize * 2f
+                        _sceneCamera.orthographicSize
                     ));
             }
 

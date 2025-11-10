@@ -67,6 +67,9 @@ namespace Game.Widgets.OrderWidget
                 }
                 
                 customerController.View.transform.SetParent(slot);
+                customerController.View.transform.localPosition = Vector3.zero;
+                customerController.View.transform.localRotation = Quaternion.identity;
+                customerController.View.transform.localScale = Vector3.one;
                 customerController.View.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack)
                     .SetLink(customerController.View.gameObject);
                 customerController.SetOrder(orderData.OrderId, orderData.Quantity);
