@@ -64,38 +64,50 @@ MonoBehaviour:
     Sprite: {fileID: 338784829, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
   _customers:
   - Name: Customer 0
+    DisplayName: Lina
     TypeId: 0
     Sprite: {fileID: -1772843445, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 1
+    DisplayName: Taro
     TypeId: 1
     Sprite: {fileID: -1780468987, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 2
+    DisplayName: Elira
     TypeId: 2
     Sprite: {fileID: -1073356507, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 3
+    DisplayName: Finn
     TypeId: 3
     Sprite: {fileID: 1703463305, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 4
+    DisplayName: Naya
     TypeId: 4
     Sprite: {fileID: -526753961, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 5
+    DisplayName: Ravi
     TypeId: 5
     Sprite: {fileID: 709497067, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 6
+    DisplayName: Kael
     TypeId: 6
     Sprite: {fileID: -321806217, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 7
+    DisplayName: Mira
     TypeId: 7
     Sprite: {fileID: -286283302, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 8
+    DisplayName: Jonas
     TypeId: 8
     Sprite: {fileID: 1998924934, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 9
+    DisplayName: Sera
     TypeId: 9
     Sprite: {fileID: -1947246893, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 10
+    DisplayName: Orin
     TypeId: 10
     Sprite: {fileID: 2096120231, guid: 839aad6baaf534212aff0d5723423178, type: 3}
   - Name: Customer 11
+    DisplayName: Lyra
     TypeId: 11
     Sprite: {fileID: 1342826291, guid: 839aad6baaf534212aff0d5723423178, type: 3}

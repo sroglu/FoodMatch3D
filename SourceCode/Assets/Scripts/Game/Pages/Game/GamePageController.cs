@@ -1,3 +1,4 @@
+using System;
 using Game.Data;
 using Game.DataStores;
 using Game.Widgets.MatchWidget;
@@ -19,15 +20,21 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
 
     protected override void OnCreate()
     {
+        var orderCount = 0;
         var orderData = new OrderData[Model.CurrentData.Level.PuzzleObjects.Length];
         for (int i = 0; i < orderData.Length; i++)
         {
             var existingPuzzleObject = Model.CurrentData.Level.PuzzleObjects[i];
             
+            if(!existingPuzzleObject.IsOrdered) continue;
+            
             //Get random customer type id for this puzzle object without using GameDataStore
             var customerTypeId = GameDataStore.Instance.GameData.GetRandomCustomerTypeId();
-            orderData[i] = new OrderData(customerTypeId, existingPuzzleObject.TypeId, existingPuzzleObject.Quantity);
+            orderData[orderCount] = new OrderData(customerTypeId, existingPuzzleObject.TypeId, existingPuzzleObject.Quantity);
+            orderCount++;
         }
+        Array.Resize(ref orderData, orderCount);
+        
         _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(orderData), View.OrderWidgetView);
         _matchBoardController = new MatchBoardController(View.MatchBoardView.Model, View.MatchBoardView);
     }

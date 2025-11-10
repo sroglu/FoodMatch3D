@@ -24,6 +24,7 @@ namespace Game.Data
     public class CustomerViewData : ICloneable
     {
         [HideInInspector] public string Name;
+        public string DisplayName;
         public uint TypeId;
         public Sprite Sprite;
         public object Clone()

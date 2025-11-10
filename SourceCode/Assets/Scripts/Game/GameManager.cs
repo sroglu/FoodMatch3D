@@ -92,6 +92,10 @@ public class GameManager : MonoBehaviour
         {
             Debug.Assert(puzzleObject.Quantity * GameData.MatchCountToClear == puzzleObject.Positions.Length);
             Debug.Assert(puzzleObject.Quantity * GameData.MatchCountToClear == puzzleObject.Rotations.Length);
+            
+            /*Debug.Log($"Spawning Puzzle Object TypeId: {puzzleObject.TypeId}, Quantity: {puzzleObject.Quantity} Positions Count: {puzzleObject.Positions.Length}" +
+                      $" Rotations Count: {puzzleObject.Rotations.Length}");*/
+            
             for (int i = 0; i < puzzleObject.Quantity * GameData.MatchCountToClear; i++)
             {
                 SpawnPuzzleObject(puzzleObject.TypeId, puzzleObject.Positions[i], puzzleObject.Rotations[i]);
