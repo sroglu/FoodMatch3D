@@ -135,15 +135,13 @@ public class GameManager : MonoBehaviour
         _puzzleObjectHolder.transform.position = Vector3.zero;
         _puzzleObjectHolder.transform.rotation = Quaternion.identity;
         
-        LevelUtils.GetPuzzleViewAndWalls(GameData.BaseSize, GameData.TopOffset, GameData.CameraEdgeOffset, GameData.CameraPositionOffset, 
-            out var cameraFarClipPlane, out var cameraOrthoSize, out Vector3 cameraPosition, out var puzzleWallsDefs); 
+        LevelUtils.GetPuzzleViewAndWalls(GameData.BaseSize, GameData.TopOffset, GameData.CameraPositionOffset, 
+            out var cameraFarClipPlane, out Vector3 cameraPosition, out var puzzleWallsDefs); 
         
         GameCamera.farClipPlane = cameraFarClipPlane;
-        GameCamera.orthographicSize = cameraOrthoSize;
         GameCamera.transform.position = cameraPosition;
-
-        _worldCanvas.transform.localPosition = new Vector3(0,0,cameraFarClipPlane/2f);
-        _worldCanvas.transform.localScale = Vector3.one * cameraOrthoSize / 1000f;
+        
+        _worldCanvas.planeDistance = cameraFarClipPlane/2;
         
         for (int i = 0; i < puzzleWallsDefs.Length; i++)
         {

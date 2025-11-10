@@ -51,8 +51,8 @@ namespace Game
         
         
         // To show puzzle objects at exactly same position in each level, we need to build walls by same logic.
-        public static void GetPuzzleViewAndWalls(Vector3 baseSize, float topOffset, float cameraEdgeOffset, Vector2 cameraPositionOffset,
-            out float cameraFarClipPlane, out float cameraOrthoSize, out Vector3 cameraPosition, out (Vector3 pos, Vector3 scale)[] puzzleWalls)
+        public static void GetPuzzleViewAndWalls(Vector3 baseSize, float topOffset, Vector2 cameraPositionOffset,
+            out float cameraFarClipPlane, out Vector3 cameraPosition, out (Vector3 pos, Vector3 scale)[] puzzleWalls)
         {
             // calculate geometry
             float halfWidth = baseSize.x * 0.5f;
@@ -65,7 +65,6 @@ namespace Game
             
             // calculate camera settings
             cameraFarClipPlane = height;
-            cameraOrthoSize = math.max(baseSize.x, baseSize.y) + cameraEdgeOffset / 2f;
             cameraPosition = new Vector3(cameraPositionOffset.x, topOffset, cameraPositionOffset.y);
             
             puzzleWalls = new (Vector3 pos, Vector3 scale)[]

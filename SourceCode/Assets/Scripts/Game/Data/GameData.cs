@@ -37,10 +37,9 @@ namespace Game.Data
     {
         #region Puzzle Constants
 
-        public static readonly Vector3 BaseSize = new Vector3(1.75f, 2.35f, 1f);
+        public static readonly Vector3 BaseSize = new Vector3(1.75f, 1.8f, 1f);
         public static readonly float TopOffset = 1f;
-        public static readonly float CameraEdgeOffset = 0.75f;
-        public static readonly Vector2 CameraPositionOffset = new Vector2(0f, -0.1f);
+        public static readonly Vector2 CameraPositionOffset = new Vector2(0f, -0.2f);
 
         #endregion
         

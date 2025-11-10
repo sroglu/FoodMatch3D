@@ -9,6 +9,7 @@ namespace Game.Data
     {
         public uint TypeId;
         public uint Quantity;
+        public bool IsOrdered;
         public Vector3[] Positions;
         public Quaternion[] Rotations;
         public override int GetHashCode()

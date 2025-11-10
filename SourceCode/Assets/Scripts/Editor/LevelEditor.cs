@@ -19,6 +19,7 @@ namespace Game.Editor
         private static GameObject _puzzleObjectHolder;
         private static readonly GameObject[] _puzzleWalls = new GameObject[6];
 
+        private const string LevelEditorSceneName = "LevelEditorScene";
 
 
         /// <summary>
@@ -38,7 +39,6 @@ namespace Game.Editor
 
         private Vector3 _baseSize = GameData.BaseSize;
         private float _topOffset = GameData.TopOffset;
-        private float _cameraEdgeOffset = GameData.CameraEdgeOffset;
         private Vector2 _cameraPositionOffset = GameData.CameraPositionOffset;
 
 
@@ -51,7 +51,7 @@ namespace Game.Editor
         public static void ShowWindow()
         {
             _window = GetWindow<LevelEditor>("Level Editor");
-            _scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/LevelEditorScene.unity");
+            _scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene($"Assets/Scenes/{LevelEditorSceneName}.unity");
             ClearScene();
         }
 
@@ -100,12 +100,11 @@ namespace Game.Editor
         private void UpdatePuzzleHolder(Vector3 baseSize, float topOffset)
         {
             
-            LevelUtils.GetPuzzleViewAndWalls(baseSize, topOffset, _cameraEdgeOffset, _cameraPositionOffset,
-                out float cameraFarClipPlane, out float cameraOrthoSize, out Vector3 cameraPosition,
+            LevelUtils.GetPuzzleViewAndWalls(baseSize, topOffset, _cameraPositionOffset,
+                out float cameraFarClipPlane, out Vector3 cameraPosition,
                 out (Vector3 pos, Vector3 scale)[] puzzleWallsDefs);
             
             _sceneCamera.farClipPlane = cameraFarClipPlane;
-            _sceneCamera.orthographicSize = cameraOrthoSize;
             _sceneCamera.transform.position = cameraPosition;
 
             for (int i = 0; i < puzzleWallsDefs.Length; i++)
@@ -146,6 +145,9 @@ namespace Game.Editor
 
         private void OnEnable()
         {
+            if (SceneManager.GetActiveScene().name != LevelEditorSceneName)
+                return;
+            
             SceneView.duringSceneGui += OnSceneGUI;
             ReloadResources();
             ClearScene();
@@ -165,6 +167,9 @@ namespace Game.Editor
 
         private void OnDisable()
         {
+            if (SceneManager.GetActiveScene().name != LevelEditorSceneName)
+                return;
+            
             SceneView.duringSceneGui -= OnSceneGUI;
 
             NewLevelWindow.OnCreateNewLevel -= HandleNewLevelCreated;
@@ -202,11 +207,7 @@ namespace Game.Editor
                     var collider = wall.GetComponent<Collider>();
                     if (collider != null)
                     {
-                        // local center -> world center
-                        Vector3 worldCenter = wall.transform.TransformPoint(collider.bounds.center);
-                        // local size scaled by the transform's lossyScale -> world size
-                        Vector3 worldSize = Vector3.Scale(collider.bounds.size, wall.transform.lossyScale);
-                        Handles.DrawWireCube(worldCenter, worldSize);
+                        Handles.DrawWireCube(collider.bounds.center, collider.bounds.size);
                     }
                 }
             }
@@ -417,18 +418,15 @@ namespace Game.Editor
 
             Vector3 newBaseSize = EditorGUILayout.Vector3Field("Puzzle Base Size", _baseSize);
             float newTopOffset = EditorGUILayout.FloatField("Puzzle Top Offset", _topOffset);
-            float newCameraEdgeOffset = EditorGUILayout.FloatField("Camera Edge Offset", _cameraEdgeOffset);
             Vector2 newCameraPositionOffset =
                 EditorGUILayout.Vector2Field("Camera Position Offset", _cameraPositionOffset);
 
             if (newBaseSize != _baseSize ||
                 Math.Abs(newTopOffset - _topOffset) > 0.001f ||
-                Math.Abs(newCameraEdgeOffset - _cameraEdgeOffset) > 0.001f ||
                 newCameraPositionOffset != _cameraPositionOffset)
             {
                 _baseSize = newBaseSize;
                 _topOffset = newTopOffset;
-                _cameraEdgeOffset = newCameraEdgeOffset;
                 _cameraPositionOffset = newCameraPositionOffset;
                 UpdatePuzzleHolder(_baseSize, _topOffset);
             }
@@ -590,6 +588,15 @@ namespace Game.Editor
                     if (puzzleObjects[i] == null)
                         puzzleObjects[i] = new PuzzleObjectSerializationData();
                     puzzleObjects[i].Quantity = newQuantity;
+                }
+                
+                bool oldIsOrdered = puzzleObjects[i]?.IsOrdered ?? false;
+                bool newIsOrdered = EditorGUILayout.Toggle("Is Ordered", oldIsOrdered);
+                if (newIsOrdered != oldIsOrdered)
+                {
+                    if (puzzleObjects[i] == null)
+                        puzzleObjects[i] = new PuzzleObjectSerializationData();
+                    puzzleObjects[i].IsOrdered = newIsOrdered;
                 }
 
                 EditorGUILayout.EndVertical();
@@ -759,6 +766,8 @@ namespace Game.Editor
                     puzzleObjectData.Positions[i] = transforms[i].position;
                     puzzleObjectData.Rotations[i] = transforms[i].rotation;
                 }
+                
+                Debug.Log(puzzleObjectData.IsOrdered);
             }
 
             _currentLevelData.CameraData = new CameraData
