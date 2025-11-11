@@ -16,6 +16,6 @@ public class DashboardPageController : Controller<DashboardPageView, DashboardPa
 
     public void LoadLevel()
     {
-        
+        GameManager.Instance.LoadNextLevel();
     }
 }

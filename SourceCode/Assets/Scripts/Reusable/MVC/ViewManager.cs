@@ -138,7 +138,7 @@ namespace mehmetsrl.MVC
         }
 
         /// <summary>
-        /// Facede for showing the designed page views
+        /// Facade for showing the designed page views
         /// </summary>
         /// <typeparam name="T"> View class </typeparam>
         /// <param name="remember"></param>
@@ -160,7 +160,7 @@ namespace mehmetsrl.MVC
             }
         }
         /// <summary>
-        /// Shows spesific page view.
+        /// Shows specific page view.
         /// </summary>
         /// <param name="view"></param>
         /// <param name="remember"></param>

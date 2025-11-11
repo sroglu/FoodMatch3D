@@ -100,6 +100,17 @@ namespace Game.DataStores
             PlayerPrefs.SetInt(PlayerPrefsKeys.PlayerCoinsKey, (int)_playerData.Coins);
             PlayerPrefs.Save();
         }
+        
+        public void SetTutorialCompleted()
+        {
+            _playerData.IsTutorialCompleted = true;
+            PlayerPrefs.SetInt(PlayerPrefsKeys.PlayerLevelKey, _playerData.CurrentLevelId.Value);
+            
+            _playerData.CurrentLevelId.Value = 1;
+            PlayerPrefs.SetInt(PlayerPrefsKeys.IsTutorialCompletedKey, 1);
+            
+            PlayerPrefs.Save();
+        }
 
         public bool TryUseCoinsOnKeepPlaying()
         {

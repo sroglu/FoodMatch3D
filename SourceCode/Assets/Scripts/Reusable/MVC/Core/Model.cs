@@ -137,6 +137,8 @@ namespace mehmetsrl.MVC.core
         }
         void UpdateDescriptionData(T[] dataArr)
         {
+            if(DescriptionDataArr == null || DescriptionDataArr.Length != dataArr.Length)
+                DescriptionDataArr = new T[dataArr.Length];
             Array.Copy(dataArr, DescriptionDataArr, dataArr.Length);
         }
         #endregion

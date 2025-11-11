@@ -104,10 +104,21 @@ public class GameManager : MonoBehaviour
         gamePage.View.UpdateView();
     }
     
+    public void LoadNextLevel()
+    {
+        var nextLevelId = new LevelId(GameDataStore.Instance.CurrentLevelId + 1);
+        LoadLevel(nextLevelId);
+    }
+    
     public void CompleteLevel(bool isSuccess)
     {
         if (isSuccess)
         {
+            //Tutorial is not implemented yet, so we skip tutorial completion check here and set it as completed directly
+            if (GameDataStore.Instance.CurrentLevelId == 0)
+            {
+                GameDataStore.Instance.SetTutorialCompleted();
+            }
             GameDataStore.Instance.UpdatePlayerDataOnLevelComplete();
         }
         
@@ -118,7 +129,6 @@ public class GameManager : MonoBehaviour
         dashboardPage.View.UpdateView();
         dashboardPage.ShowView();
         gamePage.HideView();
-        gamePage.Dispose();
     }
 
     #endregion
