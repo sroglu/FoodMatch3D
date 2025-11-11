@@ -14,6 +14,7 @@ namespace Game.DataStores
 {
     public class GameDataStore : DataStoreClass<GameDataStore>
     {
+        public Camera GameCamera { get; private set; }
         public int CurrentLevelId => _playerData.CurrentLevelId.Value;
         public GameData GameData { get; private set; }
         private PlayerData _playerData;
@@ -34,6 +35,10 @@ namespace Game.DataStores
             };
         }
 
+        public void SetGameCamera(Camera camera)
+        {
+            GameCamera = camera;
+        }
         public void SetGameData(Data.GameData gameData)
         {
             GameData = gameData;

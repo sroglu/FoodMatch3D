@@ -1,9 +1,11 @@
 using System;
 using Game.Data;
 using Game.DataStores;
+using Game.Instances.PuzzleInstances;
 using Game.Widgets.MatchWidget;
 using Game.Widgets.OrderWidget;
 using mehmetsrl.MVC.core;
+using UnityEngine;
 
 /// <summary>
 /// Game page controller.
@@ -13,6 +15,8 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
 {
     private OrderWidgetController _orderWidgetController;
     private MatchBoardController _matchBoardController;
+    
+    private static readonly int _excludeViewMask = ~LayerMask.GetMask("View");
     
     public GamePageController(GamePageModel model) : base(ControllerType.Page, model)
     {
@@ -38,5 +42,34 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(orderData), View.OrderWidgetView);
         _matchBoardController = new MatchBoardController(View.MatchBoardView.Model, View.MatchBoardView);
     }
-    
+
+    private void OnPuzzleObjectClicked(PuzzleObjectInstance puzzleObject)
+    {
+        _matchBoardController.AddToMatchBoard(puzzleObject);
+    }
+
+
+    private void RaycastPuzzleObjects()
+    {
+        var camera = GameDataStore.Instance.GameCamera;
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+        Debug.DrawRay(ray.origin, ray.direction, Color.red);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, camera.farClipPlane, _excludeViewMask))
+        {
+            Debug.DrawLine(ray.origin, hitInfo.point, Color.blue);
+            var puzzleObject = hitInfo.collider.GetComponentInParent<PuzzleObjectInstance>();
+            if (puzzleObject != null)
+            {
+                Debug.Log($"Hit Puzzle Object TypeId: {puzzleObject.TypeId}");
+                OnPuzzleObjectClicked(puzzleObject);
+            }
+        }
+    }
+
+    public void OnRaycastBlockerClicked()
+    {
+        RaycastPuzzleObjects();
+    }
 }

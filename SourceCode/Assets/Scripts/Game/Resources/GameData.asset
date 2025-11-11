@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GameData
   m_EditorClassIdentifier: 
   _levelCompleteRewardCoins: 100
+  _keepPlayingCostCoins: 500
   _puzzleObjects:
   - Name: PuzzleObject 0
     TypeId: 0
@@ -62,6 +63,9 @@ MonoBehaviour:
     TypeId: 11
     Prefab: {fileID: 1414069204001092150, guid: 84e8d6b18de8a1e49ac42b65ba6abad4, type: 3}
     Sprite: {fileID: 338784829, guid: c5f9f660d04c748988cf6db990f6ad08, type: 3}
+  _puzzleObjectMatchScaleMultiplier: 0.5
+  _puzzleObjectMatchJumpDuration: 0.2
+  _puzzleObjectMatchJumpHeight: 0.2
   _customers:
   - Name: Customer 0
     DisplayName: Lina

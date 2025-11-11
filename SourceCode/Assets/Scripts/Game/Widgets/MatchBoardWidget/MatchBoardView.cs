@@ -48,5 +48,18 @@ namespace Game.Widgets.MatchWidget
         public override void UpdateView()
         {
         }
+        
+        public int MatchSlotLimit => _matchSlots.Length;
+
+        public Vector3 GetSlotRectPosition(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= _matchSlots.Length)
+            {
+                Debug.LogError($"Slot index {slotIndex} is out of bounds.");
+                return Vector3.zero;
+            }
+
+            return _matchSlots[slotIndex].position;
+        }
     }
 }

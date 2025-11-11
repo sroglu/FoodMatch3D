@@ -5,7 +5,7 @@ using mehmetsrl.MVC.core;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class PooledObjectBehaviour : MonoBehaviour
+public class PooledObjectBehaviour : MonoBehaviour, IDisposable
 {
     public int IdentifierId { get; internal set; }
 
@@ -16,6 +16,15 @@ public class PooledObjectBehaviour : MonoBehaviour
     }
 
     protected virtual void OnRecycle() { }
+    
+    public void Dispose()
+    {
+        if (this == null)
+        {
+            return;
+        }
+        Recycle();
+    }
 }
 
 public class InstanceManager : MonoBehaviour, IDisposable

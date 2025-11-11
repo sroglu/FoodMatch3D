@@ -35,6 +35,7 @@ namespace mehmetsrl.MVC.core
         public enum CustomActionEventType
         {
             Hold,
+            Click
         }
         #endregion
 

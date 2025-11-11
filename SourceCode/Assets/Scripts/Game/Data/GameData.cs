@@ -36,6 +36,7 @@ namespace Game.Data
     [CreateAssetMenu(fileName = nameof(GameData), menuName = "Game/GameData", order = 1)]
     public class GameData : ScriptableObject
     {
+
         #region Puzzle Constants
 
         public static readonly Vector3 BaseSize = new Vector3(1.75f, 1.8f, 1f);
@@ -49,20 +50,41 @@ namespace Game.Data
         public static readonly int MatchCountToClear = 3;
         public static int LastLevelId = 5;
         
-        [Header("Rewards"), Space(5)] [SerializeField] 
+        [Header("Rewards"), Space(5)] 
+        [SerializeField] 
         private uint _levelCompleteRewardCoins = 100;
+        [SerializeField] 
         private uint _keepPlayingCostCoins = 500;
         
-        [Header("Puzzle Objects"), Space(5)] [SerializeField] 
+        [Header("Puzzle Objects"), Space(5)] 
+        [SerializeField] 
         private PuzzleObjectViewData[] _puzzleObjects;
+        [SerializeField] 
+        private float _puzzleObjectMatchScaleMultiplier = 0.5f;
+        [SerializeField] 
+        private float _puzzleObjectMatchJumpDuration = 0.2f;
+        [SerializeField] 
+        private float _puzzleObjectMatchJumpHeight = 0.2f;
         
-        [Header("Customers"), Space(5)] [SerializeField] 
+        [Header("Customers"), Space(5)] 
+        [SerializeField] 
         private CustomerViewData[] _customers;
 
         #region Getters
 
+        #region Rewards
+        
         public uint LevelCompleteRewardCoins => _levelCompleteRewardCoins;
         public uint KeepPlayingCostCoins => _keepPlayingCostCoins;
+
+        #endregion
+
+        #region Puzzle Objects
+        public float PuzzleObjectMatchScaleMultiplier => _puzzleObjectMatchScaleMultiplier;
+        public float PuzzleObjectMatchJumpDuration => _puzzleObjectMatchJumpDuration;
+        public float PuzzleObjectMatchJumpHeight => _puzzleObjectMatchJumpHeight;
+        
+        #endregion
 
         #endregion
         

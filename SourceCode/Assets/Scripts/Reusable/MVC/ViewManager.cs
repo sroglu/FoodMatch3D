@@ -78,6 +78,7 @@ namespace mehmetsrl.MVC
 
             Inputs = new Inputs();
             Inputs.UI.Hold.performed += (evArgs) => OnViewCustomAction(ViewBase.CustomActionEventType.Hold, evArgs);
+            Inputs.UI.Click.performed += (evArgs) => OnViewCustomAction(ViewBase.CustomActionEventType.Click, evArgs);
         }
         void OnEnable()
         {

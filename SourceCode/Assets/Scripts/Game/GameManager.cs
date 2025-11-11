@@ -5,6 +5,7 @@ using Game.DataStores;
 using Game.Instances.PuzzleInstances;
 using mehmetsrl.DataStore;
 using mehmetsrl.MVC;
+using mehmetsrl.MVC.core;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -30,9 +31,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Canvas _worldCanvas;
     
-    //Camera
-    public Camera GameCamera { get; private set; }
-    
     //DataStores
     private DataStoreManager _dataStoreManager;
 
@@ -49,13 +47,12 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         
-        GameCamera = Camera.main;
-        
         _dataStoreManager = new DataStoreManager();
         var gameData = Resources.Load<GameData>(nameof(GameData));
         
         GameDataStore.Initialize();
         GameDataStore.Instance.SetGameData(gameData);
+        GameDataStore.Instance.SetGameCamera(Camera.main);
 
         InitPuzzleObjects();
     }
@@ -64,7 +61,6 @@ public class GameManager : MonoBehaviour
     {
         InitPages();
     }
-
     #region Page Management
 
     
@@ -142,8 +138,8 @@ public class GameManager : MonoBehaviour
         LevelUtils.GetPuzzleViewAndWalls(GameData.BaseSize, GameData.TopOffset, GameData.CameraPositionOffset, 
             out var cameraFarClipPlane, out Vector3 cameraPosition, out var puzzleWallsDefs); 
         
-        GameCamera.farClipPlane = cameraFarClipPlane;
-        GameCamera.transform.position = cameraPosition;
+        GameDataStore.Instance.GameCamera.farClipPlane = cameraFarClipPlane;
+        GameDataStore.Instance.GameCamera.transform.position = cameraPosition;
         
         _worldCanvas.planeDistance = cameraFarClipPlane/2;
         
@@ -188,6 +184,7 @@ public class GameManager : MonoBehaviour
             var puzzleObject = InstanceManager.Instance.SpawnInstance<PuzzleObjectInstance>(puzzleObjectViewData.Prefab);
             puzzleObject.transform.SetParent(_puzzleObjectHolder, false);
             puzzleObject.Initialize(typeId, position, rotation, Vector3.one);
+            puzzleObject.GetComponentInChildren<Rigidbody>().isKinematic = false;
         }
         else
         {
