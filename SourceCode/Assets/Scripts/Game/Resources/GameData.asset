@@ -66,6 +66,8 @@ MonoBehaviour:
   _puzzleObjectMatchScaleMultiplier: 0.5
   _puzzleObjectMatchJumpDuration: 0.2
   _puzzleObjectMatchJumpHeight: 0.2
+  _puzzleObjectMatchUpDuration: 0.2
+  _puzzleObjectMatchMoveCenterDistanceOnMatch: 0.3
   _customers:
   - Name: Customer 0
     DisplayName: Lina

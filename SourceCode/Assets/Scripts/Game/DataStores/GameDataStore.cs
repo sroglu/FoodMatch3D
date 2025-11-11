@@ -19,8 +19,6 @@ namespace Game.DataStores
         public GameData GameData { get; private set; }
         private PlayerData _playerData;
         private Queue<GameActionData> gameActionQueue { get; } = new();
-        private IReadOnlyList<PuzzleObjectInstance> _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
-        public IReadOnlyList<PuzzleObjectInstance> PuzzleObjects => _puzzleObjects;
 
         protected override void OnInitialized()
         {
@@ -83,25 +81,6 @@ namespace Game.DataStores
             PlayerPrefs.Save();
             return true;
         }
-
-        public void SetSlotMatchState(IEnumerable<PuzzleObjectInstance> items)
-        {
-            if (items == null)
-            {
-                _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
-                return;
-            }
-
-            var copy = new List<PuzzleObjectInstance>(items);
-            if (copy.Count == 0)
-            {
-                _puzzleObjects = Array.Empty<PuzzleObjectInstance>();
-                return;
-            }
-
-            _puzzleObjects = copy.AsReadOnly();
-        }
-
 
 #if UNITY_EDITOR
 

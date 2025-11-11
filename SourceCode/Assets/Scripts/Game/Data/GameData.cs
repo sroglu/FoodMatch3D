@@ -65,6 +65,10 @@ namespace Game.Data
         private float _puzzleObjectMatchJumpDuration = 0.2f;
         [SerializeField] 
         private float _puzzleObjectMatchJumpHeight = 0.2f;
+        [SerializeField] 
+        private float _puzzleObjectMatchUpDuration = 0.2f;        
+        [SerializeField] 
+        private float _puzzleObjectMatchMoveCenterDistanceOnMatch = 0.3f;
         
         [Header("Customers"), Space(5)] 
         [SerializeField] 
@@ -83,6 +87,8 @@ namespace Game.Data
         public float PuzzleObjectMatchScaleMultiplier => _puzzleObjectMatchScaleMultiplier;
         public float PuzzleObjectMatchJumpDuration => _puzzleObjectMatchJumpDuration;
         public float PuzzleObjectMatchJumpHeight => _puzzleObjectMatchJumpHeight;
+        public float PuzzleObjectMatchUpDuration => _puzzleObjectMatchUpDuration;
+        public float PuzzleObjectMatchMoveCenterDistanceOnMatch => _puzzleObjectMatchMoveCenterDistanceOnMatch;
         
         #endregion
 

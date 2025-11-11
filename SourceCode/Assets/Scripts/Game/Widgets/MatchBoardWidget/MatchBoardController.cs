@@ -14,6 +14,9 @@ namespace Game.Widgets.MatchWidget
         private readonly Dictionary<ActionButtonView, ActionButtonController> _actionButtonControllers = new();
 
         private readonly List<PuzzleObjectInstance> _slots = new();
+        private readonly List<int> _puzzleObjectIndicesToMatchCheck = new(2);
+        private readonly List<int> _buckedToSelectUnmatches = new();
+        private readonly PuzzleObjectInstance[] _puzzleObjectsToBeMatched = new PuzzleObjectInstance[GameData.MatchCountToClear];
 
         public MatchBoardController(MatchBoardModel model, MatchBoardView view = null) : base(ControllerType.Instance,
             model, view)
@@ -59,6 +62,8 @@ namespace Game.Widgets.MatchWidget
             
             _slots.Insert(insertIndex, puzzleObjectInstance);
 
+            CheckAndHandleMatches();
+            
             //Move other slots to their new positions
             for (int i = 0; i < _slots.Count; i++)
             {
@@ -72,7 +77,106 @@ namespace Game.Widgets.MatchWidget
                 }
             }
 
-            GameDataStore.Instance.SetSlotMatchState(_slots);
+        }
+
+
+        private void CheckAndHandleMatches()
+        {
+            _puzzleObjectIndicesToMatchCheck.Clear();
+            _buckedToSelectUnmatches.Clear();
+
+            uint lastTypeId = _slots[0].TypeId;
+            _puzzleObjectIndicesToMatchCheck.Add(0);
+
+            for (int i = 1; i < _slots.Count; i++)
+            {
+                if (_slots[i].TypeId == lastTypeId)
+                {
+                    if(_puzzleObjectIndicesToMatchCheck.Count == 0)
+                    {
+                        //remove previous from unmatches and add both to match check
+                        _buckedToSelectUnmatches.Remove(i - 1);
+                        _puzzleObjectIndicesToMatchCheck.Add(i - 1);
+                    }
+                    _puzzleObjectIndicesToMatchCheck.Add(i);
+                    if (_puzzleObjectIndicesToMatchCheck.Count == GameData.MatchCountToClear)
+                    {
+                        _puzzleObjectIndicesToMatchCheck.Clear();
+                    }
+                }
+                else
+                {
+                    _buckedToSelectUnmatches.AddRange(_puzzleObjectIndicesToMatchCheck);
+                    _puzzleObjectIndicesToMatchCheck.Clear();
+                    _buckedToSelectUnmatches.Add(i);
+                }
+
+                lastTypeId = _slots[i].TypeId;
+            }
+
+            //clear remaining matches to check as unmatches
+            _buckedToSelectUnmatches.AddRange(_puzzleObjectIndicesToMatchCheck);
+            _puzzleObjectIndicesToMatchCheck.Clear();
+
+
+            int matchIndex = 0;
+            for (int i = _slots.Count - 1; i >= 0; i--)
+            {
+                bool shouldRemove = !_buckedToSelectUnmatches.Contains(i);
+                if (!shouldRemove) continue;
+                
+                var puzzleObjectInstance = _slots[i];
+                _slots.RemoveAt(i);
+                
+                _puzzleObjectsToBeMatched[matchIndex++] = puzzleObjectInstance;
+                
+                if(matchIndex == GameData.MatchCountToClear)
+                {
+                    HandleMatched((PuzzleObjectInstance[])_puzzleObjectsToBeMatched.Clone());
+                    matchIndex = 0;
+                }
+            }
+        }
+        
+        private void HandleMatched(PuzzleObjectInstance[] matchedPuzzleObjects)
+        {
+            Debug.Log($"Matched {matchedPuzzleObjects.Length} puzzle objects with TypeId: {matchedPuzzleObjects[0].TypeId}, and desposed.");
+            //scale up the middle and move others to the sides and dispose them
+            var middleIndex = matchedPuzzleObjects.Length / 2;
+            for (int i = 0; i < matchedPuzzleObjects.Length; i++)
+            {
+                var puzzleObjectInstance = matchedPuzzleObjects[i];
+                if (i == middleIndex)
+                {
+                    //Scale up animation
+                    var targetScale = Vector3.one;
+                    puzzleObjectInstance.transform
+                        .DOScale(targetScale, GameDataStore.Instance.GameData.PuzzleObjectMatchUpDuration)
+                        .SetEase(Ease.OutQuad)
+                        .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
+                        {
+                            //Dispose after scaling up
+                            puzzleObjectInstance.Dispose();
+                            //TODO: Add effects stars or particles here
+                        });
+                }
+                else
+                {
+                    //Move to sides and dispose
+                    var direction = i < middleIndex ? -1 : 1;
+                    var targetPosition = puzzleObjectInstance.transform.position +
+                                         new Vector3(direction * GameDataStore.Instance.GameData
+                                             .PuzzleObjectMatchMoveCenterDistanceOnMatch, 0, 0);
+                    puzzleObjectInstance.transform
+                        .DOMove(targetPosition, GameDataStore.Instance.GameData.PuzzleObjectMatchUpDuration)
+                        .SetEase(Ease.OutQuad)
+                        .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
+                        {
+                            //Dispose after moving out
+                            puzzleObjectInstance.Dispose();
+                        });
+                }
+            }
         }
 
         // Move the puzzle object already in the view slot to its new position

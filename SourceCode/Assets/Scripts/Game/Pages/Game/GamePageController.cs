@@ -68,8 +68,12 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         }
     }
 
+    private float _timeSinceLastClick = 0f;
+    private const float ClickCooldown = 0.2f;
     public void OnRaycastBlockerClicked()
     {
+        if (_timeSinceLastClick + ClickCooldown > Time.realtimeSinceStartup) return;
         RaycastPuzzleObjects();
+        _timeSinceLastClick = Time.realtimeSinceStartup;
     }
 }
