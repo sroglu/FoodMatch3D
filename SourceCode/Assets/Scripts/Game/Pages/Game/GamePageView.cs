@@ -32,4 +32,17 @@ public class GamePageView : View<GamePageModel>
                 break;
         }
     }
+    
+    protected override void OnStateChanged(ViewState state)
+    {
+        switch (state)
+        {
+            case ViewState.Visible:
+                Controller.OnViewEnabled();
+                break;
+            case ViewState.Invisible:
+                Controller.OnViewDisabled();
+                break;
+        }
+    }
 }

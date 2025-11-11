@@ -17,8 +17,12 @@ namespace Game.DataStores
         public Camera GameCamera { get; private set; }
         public int CurrentLevelId => _playerData.CurrentLevelId.Value;
         public GameData GameData { get; private set; }
+
+        public Action OnPuzzleObjectMatched;
+        
         private PlayerData _playerData;
         private Queue<GameActionData> gameActionQueue { get; } = new();
+        private Queue<uint> matchActionQueue { get; } = new();
 
         protected override void OnInitialized()
         {
@@ -41,13 +45,16 @@ namespace Game.DataStores
         {
             GameData = gameData;
         }
+
+        #region Game Actions
+
         
         public void AddGameAction(GameActionData actionData)
         {
             gameActionQueue.Enqueue(actionData);
         }
 
-        public bool TryAddGameAction(out GameActionData actionData)
+        public bool TryConsumeGameAction(out GameActionData actionData)
         {
             if (gameActionQueue.Count == 0)
             {
@@ -58,6 +65,31 @@ namespace Game.DataStores
             actionData = gameActionQueue.Dequeue();
             return true;
         }
+
+        #endregion
+
+        #region Match Actions
+
+        
+        public void AddClearMatchedPuzzleObject(uint typeId)
+        {
+            matchActionQueue.Enqueue(typeId);
+            OnPuzzleObjectMatched?.Invoke();
+        }
+
+        public bool TryConsumeMatchAction(out uint typeId)
+        {
+            if (matchActionQueue.Count == 0)
+            {
+                typeId = uint.MaxValue;
+                return false;
+            }
+
+            typeId = matchActionQueue.Dequeue();
+            return true;
+        }
+
+        #endregion
 
         public void UpdatePlayerDataOnLevelComplete()
         {

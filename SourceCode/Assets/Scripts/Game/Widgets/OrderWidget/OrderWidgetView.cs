@@ -1,9 +1,5 @@
 using System.Collections.Generic;
-using DG.Tweening;
-using Game.Data;
-using Game.DataStores;
 using mehmetsrl.MVC.core;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Widgets.OrderWidget
@@ -16,18 +12,24 @@ namespace Game.Widgets.OrderWidget
         
         public int OrderLimitAtTheSameTime => _slotsParent.childCount;
         
-        private readonly Dictionary<int,CustomerController> _instantiatedCustomers = new();
+        /*private readonly Dictionary<int,CustomerController> _instantiatedCustomers = new();*/
+        private new OrderWidgetController Controller => base.Controller as OrderWidgetController;
 
         protected override void OnCreate()
         {
             Debug.Assert(_slotsParent != null);
         }
 
-        public void UpdateOrders((int,OrderData)[] orderDataArr)
+        public RectTransform GetSlotRectTransform(int slotIndex)
         {
-            for (int i = 0; i < orderDataArr.Length; i++)
+            return _slotsParent.GetChild(slotIndex) as RectTransform;
+        }
+
+        /*public void UpdateOrders((int,OrderData)[] ordersToBeDisplayed)
+        {
+            for (int i = 0; i < ordersToBeDisplayed.Length; i++)
             {
-                var (orderIndex, orderData) = orderDataArr[i];
+                var (orderIndex, orderData) = ordersToBeDisplayed[i];
                 Debug.Assert(!orderData.IsCompleted);
                 
                 if (!GameDataStore.Instance.GameData.TryGetCustomerViewData(orderData.CustomerId,
@@ -52,7 +54,21 @@ namespace Game.Widgets.OrderWidget
                     .SetLink(customerController.View.gameObject);
                 customerController.SetOrder(orderData.OrderId, orderData.Quantity);
             }
+        }*/
+
+        protected override void OnStateChanged(ViewState state)
+        {
+            switch (state)
+            {
+                case ViewState.Visible:
+                    Controller.OnViewEnabled();
+                    break;
+                case ViewState.Invisible:
+                    Controller.OnViewDisabled();
+                    break;
+            }
         }
+
         public override void UpdateView()
         {
             //UpdateOrders();

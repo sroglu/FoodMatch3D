@@ -84,9 +84,17 @@ namespace mehmetsrl.MVC.core
 
         protected virtual void Awake()
         {
-            ActionPerformed += (CustomActionEventType actionType, InputAction.CallbackContext evArgs, GameObject targetObj) => { if (IsPointerOn) OnCustomInputAction(actionType, evArgs, targetObj); };
+            ActionPerformed += HandleInputAction;
             gameObject.layer = LayerMask.NameToLayer("View");
             OnCreate();
+        }
+        
+        private void HandleInputAction(CustomActionEventType actionType, InputAction.CallbackContext evArgs, GameObject targetObj)
+        {
+            if (IsPointerOn)
+            {
+                OnCustomInputAction(actionType, evArgs, targetObj);
+            }
         }
         
         void FixedUpdate()
@@ -100,7 +108,7 @@ namespace mehmetsrl.MVC.core
         protected void OnDestroy()
         {
             OnRemove();
-            ActionPerformed = null;
+            ActionPerformed -= HandleInputAction;
         }
         /// <summary>
         /// Dispose method destroys the instance.

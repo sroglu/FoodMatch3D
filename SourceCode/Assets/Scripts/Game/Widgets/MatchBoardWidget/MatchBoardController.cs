@@ -140,7 +140,10 @@ namespace Game.Widgets.MatchWidget
         
         private void HandleMatched(PuzzleObjectInstance[] matchedPuzzleObjects)
         {
-            Debug.Log($"Matched {matchedPuzzleObjects.Length} puzzle objects with TypeId: {matchedPuzzleObjects[0].TypeId}, and desposed.");
+            Debug.Assert(matchedPuzzleObjects.Length == GameData.MatchCountToClear);
+                
+            GameDataStore.Instance.AddClearMatchedPuzzleObject(matchedPuzzleObjects[0].TypeId);
+            
             //scale up the middle and move others to the sides and dispose them
             var middleIndex = matchedPuzzleObjects.Length / 2;
             for (int i = 0; i < matchedPuzzleObjects.Length; i++)

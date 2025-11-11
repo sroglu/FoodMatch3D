@@ -41,6 +41,18 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         
         _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(orderData), View.OrderWidgetView);
         _matchBoardController = new MatchBoardController(View.MatchBoardView.Model, View.MatchBoardView);
+
+    }
+    
+    public void OnViewEnabled()
+    {
+        _orderWidgetController.View.Show();
+        _matchBoardController.View.Show();
+    }
+    public void OnViewDisabled()
+    {
+        _orderWidgetController.View.Hide();
+        _matchBoardController.View.Hide();
     }
 
     private void OnPuzzleObjectClicked(PuzzleObjectInstance puzzleObject)

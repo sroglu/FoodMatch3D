@@ -19,7 +19,7 @@ public class CustomerController : Controller<CustomerView, CustomerModel>
     public void EndOrder()
     {
         //play pop animation than destroy
-        View.RectTransform.DOScale(Vector3.zero, 0.3f).OnComplete(Dispose);
+        Dispose();
     }
 
     protected override void OnDestroy()

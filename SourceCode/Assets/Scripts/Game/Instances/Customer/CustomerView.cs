@@ -17,13 +17,21 @@ public class CustomerView : View<CustomerModel>
         //_customerNameText.text = Model.CurrentData.DisplayName;
         _customerImage.sprite = Model.CurrentData.Sprite;
 
-        _customerOrderText.text = $"x {Model.Quantity}";
-        if (!GameDataStore.Instance.GameData.TryGetPuzzleObjectViewData(Model.OrderId, out var orderViewData))
+        if(Model.Quantity > 0 )
         {
-            Debug.LogError($"Ordered Puzzle Object View Data not found for OrderId: {Model.OrderId}");
-            return;
-        }
+            _customerOrderText.text = $"x {Model.Quantity}";
+            if (!GameDataStore.Instance.GameData.TryGetPuzzleObjectViewData(Model.OrderId, out var orderViewData))
+            {
+                Debug.LogError($"Ordered Puzzle Object View Data not found for OrderId: {Model.OrderId}");
+                return;
+            }
 
-        _customerOrderImage.sprite = orderViewData.Sprite;
+            _customerOrderImage.sprite = orderViewData.Sprite;
+        }
+        else
+        {
+            _customerOrderText.text = "";
+            _customerOrderImage.sprite = null;
+        }
     }
 }
