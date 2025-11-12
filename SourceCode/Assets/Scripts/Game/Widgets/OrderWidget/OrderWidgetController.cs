@@ -5,6 +5,7 @@ using Game.DataStores;
 using mehmetsrl.MVC.core;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Widgets.OrderWidget
 {
@@ -155,9 +156,15 @@ namespace Game.Widgets.OrderWidget
                     customerController = InstanceManager.Instance.CreateCustomer(customerViewData);
                     _instantiatedCustomers.Add(orderIndex, customerController);
                 }
-
-                customerController.View.transform.SetParent(slot);
+                
+                
+                customerController.View.RectTransform.SetParent(slot);
+                
+                customerController.View.RectTransform.sizeDelta = Vector2.zero;
+                customerController.View.RectTransform.anchorMin = Vector2.zero;
+                customerController.View.RectTransform.anchorMax = Vector2.one;
                 customerController.View.RectTransform.anchoredPosition = Vector2.zero;
+                
                 
                 customerController.View.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack)
                     .SetLink(customerController.View.gameObject);
