@@ -1,5 +1,6 @@
 using Game.DataStores;
 using mehmetsrl.MVC.core;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public class DashboardPageView : View<DashboardPageModel>
 {
     [SerializeField]
-    private Text _levelText;
+    private TMP_Text _levelText;
     [SerializeField]
     private Button _levelButton;
     
