@@ -4,15 +4,11 @@ using UnityEngine;
 
 namespace Game.Widgets.MatchWidget
 {
-    public class MatchBoardModel : Model<PuzzleObjectViewData>
+    public class MatchBoardModel : Model<EmptyData>
     {
         public uint SlotCountForMerge { get; private set; }
 
-        public MatchBoardModel(PuzzleObjectViewData[] dataArr) : base(dataArr)
-        {
-            SlotCountForMerge = GameData.InitialSlotCountForMerge;
-        }
-        
+        public MatchBoardModel(EmptyData data) : base(data) { }
         public void UpdateSlotCountForMergeOnCoinSpend()
         {
             if (SlotCountForMerge - GameData.InitialSlotCountForMerge < GameData.MaxSlotIncrementAmount)

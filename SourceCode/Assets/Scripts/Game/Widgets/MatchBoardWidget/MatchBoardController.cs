@@ -23,7 +23,15 @@ namespace Game.Widgets.MatchWidget
         {
         }
 
+        private bool _isCreated = false;
+        
         protected override void OnCreate()
+        {
+            SetupActionButtons();
+            _isCreated = true;
+        }
+        
+        private void SetupActionButtons()
         {
             foreach (var actionButtonView in View.ActionButtons)
             {
@@ -239,6 +247,12 @@ namespace Game.Widgets.MatchWidget
             var cameraPosition = GameDataStore.Instance.GameCamera.transform.position;
             return new Vector3(targetSlotPosition.x, (targetSlotPosition.y + cameraPosition.y) / 2,
                 targetSlotPosition.z);
+        }
+
+        public void Update(EmptyData emptyData)
+        {
+            if(_isCreated) return;
+            SetupActionButtons();
         }
     }
 }

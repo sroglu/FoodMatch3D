@@ -1,3 +1,4 @@
+using System;
 using Game;
 using Game.Data;
 using Game.Data.ModelData;
@@ -7,6 +8,7 @@ using mehmetsrl.DataStore;
 using mehmetsrl.MVC;
 using mehmetsrl.MVC.core;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class GameManager : MonoBehaviour
 {
@@ -67,6 +69,9 @@ public class GameManager : MonoBehaviour
     private void InitPages()
     {
         dashboardPage = new DashboardPageController(new DashboardPageModel(new DashboardPageData()));
+        dashboardPage.HideView();
+        gamePage = new GamePageController(new GamePageModel(new GamePageData()));
+        gamePage.HideView();
         if (GameDataStore.Instance.CurrentLevelId == 0)
         {
             //Player is new, start from level 1
@@ -79,7 +84,19 @@ public class GameManager : MonoBehaviour
         }
         
     }
-    
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            CompleteLevel(false);
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            CompleteLevel(true);
+        }
+    }
+
     private void LoadLevel(LevelId levelId)
     {
         var level = LevelUtils.LoadLevel(levelId);
@@ -98,7 +115,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        gamePage = new GamePageController(new GamePageModel(new GamePageData(level)));
+        gamePage.Update(new GamePageData(level));
         dashboardPage.HideView();
         gamePage.ShowView();
         gamePage.View.UpdateView();
@@ -112,6 +129,7 @@ public class GameManager : MonoBehaviour
     
     public void CompleteLevel(bool isSuccess)
     {
+        ClearPuzzleObjects();
         if (isSuccess)
         {
             //Tutorial is not implemented yet, so we skip tutorial completion check here and set it as completed directly
@@ -200,6 +218,14 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError($"Puzzle Object View Data not found for TypeId: {typeId}");
             return;
+        }
+    }
+    
+    private void ClearPuzzleObjects()
+    {
+        foreach (var puzzleObject in _puzzleObjectHolder.GetComponentsInChildren<PuzzleObjectInstance>())
+        {
+            puzzleObject.Dispose();
         }
     }
 

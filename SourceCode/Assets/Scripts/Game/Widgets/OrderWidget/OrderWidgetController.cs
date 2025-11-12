@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DG.Tweening;
+using Game.Data;
 using Game.DataStores;
 using mehmetsrl.MVC.core;
 using Unity.Mathematics;
@@ -15,21 +16,36 @@ namespace Game.Widgets.OrderWidget
 
         protected override void OnCreate()
         {
+            SetupInitialOrders();
+        }
+        
+        private void SetupInitialOrders()
+        {
             for (int i = 0; i < Model.CurrentDataArr.Length; i++)
             {
                 _ordersIndexes.Add(i);
             }
-
             FilterAndDisplayOrders();
         }
-        
+
         public void OnViewEnabled()
         {
             GameDataStore.Instance.OnPuzzleObjectMatched += OnPuzzleObjectMatched;
         }
+
         public void OnViewDisabled()
         {
             GameDataStore.Instance.OnPuzzleObjectMatched -= OnPuzzleObjectMatched;
+            DestroyAllCustomers();
+        }
+
+        private void DestroyAllCustomers()
+        {
+            foreach (var customerController in _instantiatedCustomers.Values)
+            {
+                customerController.Dispose();
+            }
+            _instantiatedCustomers.Clear();
         }
 
         private void OnPuzzleObjectMatched()
@@ -141,15 +157,27 @@ namespace Game.Widgets.OrderWidget
                 }
 
                 customerController.View.transform.SetParent(slot);
-                customerController.View.transform.localPosition = Vector3.zero;
-                customerController.View.transform.localRotation = Quaternion.identity;
-                customerController.View.transform.localScale = Vector3.one;
+                customerController.View.RectTransform.anchoredPosition = Vector2.zero;
+                
                 customerController.View.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack)
                     .SetLink(customerController.View.gameObject);
                 customerController.SetOrder(orderData.OrderId, orderData.Quantity);
             }
             
         }
-        
+
+        public void Update(OrderData[] getOrdersFromLevelData)
+        {
+            Model.Update(getOrdersFromLevelData);
+            foreach(var orderData in _instantiatedCustomers)
+            {
+                orderData.Value.Dispose();
+            }
+            _instantiatedCustomers.Clear();
+            _ordersIndexes.Clear();
+            
+            SetupInitialOrders();
+
+        }
     }
 }

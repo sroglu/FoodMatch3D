@@ -21,6 +21,7 @@ public class GamePageView : View<GamePageModel>
     protected override void OnCustomInputAction(CustomActionEventType actionType, InputAction.CallbackContext evArgs,
         GameObject targetObj)
     {
+        if(!Model.CurrentData.IsLevelLoaded) return;
         switch (actionType)
         {
             case CustomActionEventType.Click:
@@ -35,6 +36,7 @@ public class GamePageView : View<GamePageModel>
     
     protected override void OnStateChanged(ViewState state)
     {
+        if(!Model.CurrentData.IsLevelLoaded) return;
         switch (state)
         {
             case ViewState.Visible:

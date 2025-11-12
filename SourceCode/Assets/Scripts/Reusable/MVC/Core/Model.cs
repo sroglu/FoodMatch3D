@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using mehmetsrl.MVC.Utils;
 
 namespace mehmetsrl.MVC.core
 {
@@ -23,6 +24,7 @@ namespace mehmetsrl.MVC.core
         private ModelType _modelType = ModelType.Array;
 
         private static readonly Dictionary<uint, IModel> _modelDictionary = new();
+        private static readonly PriorityQueue<uint,IModel> _reorderedModels = new();
 
         protected uint RegisterNewModel()
         {
@@ -51,6 +53,24 @@ namespace mehmetsrl.MVC.core
             if (ModelType == ModelType.Single)
             {
                 _modelDictionary.Remove(_instanceId);
+            }
+            
+            _reorderedModels.Clear();
+            
+            foreach(var modelId in _modelDictionary.Keys)
+            {
+                if (modelId > _instanceId)
+                {
+                    _reorderedModels.Add(modelId, _modelDictionary[modelId]);
+                }
+            }
+            
+            var startId = _instanceId;
+            while (_reorderedModels.Count > 0)
+            {
+                var entry =  _reorderedModels.PopMin();
+                _modelDictionary.Remove(entry.Key);
+                _modelDictionary.Add(startId++, entry.Value);
             }
         }
 

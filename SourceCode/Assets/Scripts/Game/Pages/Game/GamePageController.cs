@@ -5,6 +5,7 @@ using Game.Instances.PuzzleInstances;
 using Game.Widgets.MatchWidget;
 using Game.Widgets.OrderWidget;
 using mehmetsrl.MVC.core;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -18,11 +19,25 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
     
     private static readonly int _excludeViewMask = ~LayerMask.GetMask("View");
     
+    private readonly Collider[] _collisionResults = new Collider[100];
+    
     public GamePageController(GamePageModel model) : base(ControllerType.Page, model)
     {
     }
+    
+    private bool _isCreated = false;
 
     protected override void OnCreate()
+    {
+        if(!Model.CurrentData.IsLevelLoaded) return;
+        
+        _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(GetOrdersFromLevelData()), View.OrderWidgetView);
+        _matchBoardController = new MatchBoardController(new MatchBoardModel(new EmptyData()), View.MatchBoardView);
+
+        _isCreated = true;
+    }
+
+    private OrderData[] GetOrdersFromLevelData()
     {
         var orderCount = 0;
         var orderData = new OrderData[Model.CurrentData.Level.PuzzleObjects.Length];
@@ -38,19 +53,19 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
             orderCount++;
         }
         Array.Resize(ref orderData, orderCount);
-        
-        _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(orderData), View.OrderWidgetView);
-        _matchBoardController = new MatchBoardController(View.MatchBoardView.Model, View.MatchBoardView);
 
+        return orderData;
     }
     
     public void OnViewEnabled()
     {
+        if(!Model.CurrentData.IsLevelLoaded) return;
         _orderWidgetController.View.Show();
         _matchBoardController.View.Show();
     }
     public void OnViewDisabled()
     {
+        if(!Model.CurrentData.IsLevelLoaded) return;
         _orderWidgetController.View.Hide();
         _matchBoardController.View.Hide();
     }
@@ -66,6 +81,7 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
     private void ApplyTouchEffectToOtherObjectsAround(PuzzleObjectInstance puzzleObject)
     {
         var center = puzzleObject.transform.position;
+        puzzleObject.GetComponentInChildren<Rigidbody>().isKinematic = true;
         
         // compute object radius from Collider or Renderer bounds, fallback to a small default
         float objectRadius = 0f;
@@ -84,12 +100,15 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         }
 
         // use the object's size as radius, add slight padding
-        var radius = Mathf.Max(0.01f, objectRadius * 1.2f);
+        var radius = math.max(0.01f, objectRadius * 1.2f);
         const float impulseStrength = 5f;
+        
+        var size = Physics.OverlapSphereNonAlloc(center, radius, _collisionResults);
 
-        var colliders = Physics.OverlapSphere(center, radius);
-        foreach (var col in colliders)
+        for (int i = 0; i < size; i++)
         {
+            var col = _collisionResults[i];
+            if(col.gameObject.GetComponentInParent<PuzzleObjectInstance>() == null) continue;
             var rb = col.attachedRigidbody;
             if (rb == null) continue;
             if (rb.isKinematic) continue;
@@ -135,5 +154,19 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         if (_timeSinceLastClick + ClickCooldown > Time.realtimeSinceStartup) return;
         RaycastPuzzleObjects();
         _timeSinceLastClick = Time.realtimeSinceStartup;
+    }
+
+    public void Update(GamePageData gamePageData)
+    {
+        Model.Update(gamePageData);
+        if (_isCreated)
+        {
+            _orderWidgetController.Update(GetOrdersFromLevelData());
+            _matchBoardController.Update(new EmptyData());
+        }
+        else
+        {
+            OnCreate();
+        }
     }
 }
