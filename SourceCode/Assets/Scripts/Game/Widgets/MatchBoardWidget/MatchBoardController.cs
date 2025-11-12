@@ -200,8 +200,7 @@ namespace Game.Widgets.MatchWidget
                     GameDataStore.Instance.GameData.PuzzleObjectMatchJumpDuration).SetEase(Ease.OutQuad)
                 .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
                 {
-                    puzzleObjectInstance.transform.position =
-                        puzzleObjectInstance.transform.position;
+                    puzzleObjectInstance.transform.position = targetSlotPosition;
                 });
         }
 
@@ -223,13 +222,20 @@ namespace Game.Widgets.MatchWidget
             //TODO: Add front view rotation info to show puzzle object facing front here 
             puzzleObjectInstance.transform.DORotateQuaternion(Quaternion.identity,
                     GameDataStore.Instance.GameData.PuzzleObjectMatchJumpDuration).SetEase(Ease.OutQuad)
-                .SetLink(puzzleObjectInstance.gameObject).OnComplete(() => { });
+                .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
+                {
+                    puzzleObjectInstance.transform.rotation = Quaternion.identity;
+                });
 
             puzzleObjectInstance.transform
                 .DOJump(targetSlotPosition, GameDataStore.Instance.GameData.PuzzleObjectMatchJumpHeight, 1,
                     GameDataStore.Instance.GameData.PuzzleObjectMatchJumpDuration)
                 .SetEase(Ease.OutQuad)
-                .SetLink(puzzleObjectInstance.gameObject).OnComplete(() => { });
+                .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
+                {
+                    puzzleObjectInstance.transform.position = targetSlotPosition;
+                });
+            
             var targetScale = puzzleObjectInstance.transform.localScale *
                               GameDataStore.Instance.GameData.PuzzleObjectMatchScaleMultiplier;
             puzzleObjectInstance.transform
