@@ -58,6 +58,54 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
     private void OnPuzzleObjectClicked(PuzzleObjectInstance puzzleObject)
     {
         _matchBoardController.AddToMatchBoard(puzzleObject);
+        
+        ApplyTouchEffectToOtherObjectsAround(puzzleObject);
+        
+    }
+
+    private void ApplyTouchEffectToOtherObjectsAround(PuzzleObjectInstance puzzleObject)
+    {
+        var center = puzzleObject.transform.position;
+        
+        // compute object radius from Collider or Renderer bounds, fallback to a small default
+        float objectRadius = 0f;
+        var objCollider = puzzleObject.GetComponentInChildren<Collider>();
+        if (objCollider != null)
+        {
+            objectRadius = objCollider.bounds.extents.magnitude;
+        }
+        else
+        {
+            var renderer = puzzleObject.GetComponentInChildren<Renderer>();
+            if (renderer != null)
+                objectRadius = renderer.bounds.extents.magnitude;
+            else
+                objectRadius = 0.5f; // fallback if no bounds available
+        }
+
+        // use the object's size as radius, add slight padding
+        var radius = Mathf.Max(0.01f, objectRadius * 1.2f);
+        const float impulseStrength = 5f;
+
+        var colliders = Physics.OverlapSphere(center, radius);
+        foreach (var col in colliders)
+        {
+            var rb = col.attachedRigidbody;
+            if (rb == null) continue;
+            if (rb.isKinematic) continue;
+            if (rb.gameObject == puzzleObject.gameObject) continue;
+
+            var dir = rb.worldCenterOfMass - center;
+            var dist = dir.magnitude;
+            if (dist < 0.01f) dir = UnityEngine.Random.onUnitSphere;
+
+            var attenuation = 1f - Mathf.Clamp01(dist / radius);
+            var impulse = dir.normalized * impulseStrength * attenuation;
+
+            rb.AddForce(impulse, ForceMode.Impulse);
+            rb.AddTorque(UnityEngine.Random.onUnitSphere * (impulseStrength * 0.1f), ForceMode.Impulse);
+        }
+        
     }
 
 
