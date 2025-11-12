@@ -169,7 +169,7 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         if (_isCreated)
         {
             _orderWidgetController.Update(GetOrdersFromLevelData());
-            _matchBoardController.Update(new EmptyData());
+            _matchBoardController.UpdateController();
         }
         else
         {

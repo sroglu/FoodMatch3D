@@ -17,14 +17,17 @@ namespace Game.Widgets.MatchWidget
         private readonly List<int> _puzzleObjectIndicesToMatchCheck = new(2);
         private readonly List<int> _buckedToSelectUnmatches = new();
         private readonly PuzzleObjectInstance[] _puzzleObjectsToBeMatched = new PuzzleObjectInstance[GameData.MatchCountToClear];
+        
+        private double _remainingStarStrikeCooldownTime = 0;
+        private byte StarCollectionStrike = 0;
+        private double _remainingStarStrikeWaitTime = 0;
 
         public MatchBoardController(MatchBoardModel model, MatchBoardView view = null) : base(ControllerType.Instance,
-            model, view)
-        {
-        }
+            model, view) { }
 
         private bool _isCreated = false;
-        
+
+        #region Lifecycle Methods
         protected override void OnCreate()
         {
             Initialize();
@@ -42,7 +45,7 @@ namespace Game.Widgets.MatchWidget
                     _actionButtonControllers.Add(actionButtonView, actionButtonController);
                 }
             }
-            InitiateStarCollectionStreak();
+            ResetStarCollectionStreak();
         }
         
         public void OnViewEnabled()
@@ -60,10 +63,23 @@ namespace Game.Widgets.MatchWidget
             DecreaseStarStrikeCooldowns();
         }
         
+        
+        public void UpdateController()
+        {
+            ResetStarCollectionStreak();
+            if(_isCreated) return;
+            Initialize();
+        }
+        
+        #endregion
+        
+        
         private void OnOrderCompleted()
         {
             PopulateStar();
         }
+
+        #region Matchbox Management Methods
 
         private bool GetInsertIndex(uint typeId, out int insertIndex)
         {
@@ -72,7 +88,7 @@ namespace Game.Widgets.MatchWidget
             {
                 if (_slots[i].TypeId == typeId) lastIndex = i;
             }
-            
+
             insertIndex = lastIndex >= 0 ? lastIndex + 1 : _slots.Count;
             return insertIndex < View.MatchSlotLimit;
         }
@@ -81,18 +97,18 @@ namespace Game.Widgets.MatchWidget
         {
             if (puzzleObjectInstance == null) return;
 
-            if(!GetInsertIndex(puzzleObjectInstance.TypeId, out int insertIndex))
+            if (!GetInsertIndex(puzzleObjectInstance.TypeId, out int insertIndex))
             {
                 //No space to insert end the game
                 Debug.Log("No space to insert the puzzle object. Game Over.");
                 GameManager.Instance.CompleteLevel(false);
                 return;
             }
-            
+
             _slots.Insert(insertIndex, puzzleObjectInstance);
 
             CheckAndHandleMatches();
-            
+
             //Move other slots to their new positions
             for (int i = 0; i < _slots.Count; i++)
             {
@@ -105,7 +121,6 @@ namespace Game.Widgets.MatchWidget
                     MovePuzzleObjectInViewSlot(i);
                 }
             }
-
         }
 
 
@@ -121,12 +136,13 @@ namespace Game.Widgets.MatchWidget
             {
                 if (_slots[i].TypeId == lastTypeId)
                 {
-                    if(_puzzleObjectIndicesToMatchCheck.Count == 0)
+                    if (_puzzleObjectIndicesToMatchCheck.Count == 0)
                     {
                         //remove previous from unmatches and add both to match check
                         _buckedToSelectUnmatches.Remove(i - 1);
                         _puzzleObjectIndicesToMatchCheck.Add(i - 1);
                     }
+
                     _puzzleObjectIndicesToMatchCheck.Add(i);
                     if (_puzzleObjectIndicesToMatchCheck.Count == GameData.MatchCountToClear)
                     {
@@ -153,34 +169,33 @@ namespace Game.Widgets.MatchWidget
             {
                 bool shouldRemove = !_buckedToSelectUnmatches.Contains(i);
                 if (!shouldRemove) continue;
-                
+
                 var puzzleObjectInstance = _slots[i];
                 _slots.RemoveAt(i);
-                
+
                 _puzzleObjectsToBeMatched[matchIndex++] = puzzleObjectInstance;
-                
-                if(matchIndex == GameData.MatchCountToClear)
+
+                if (matchIndex == GameData.MatchCountToClear)
                 {
                     HandleMatched((PuzzleObjectInstance[])_puzzleObjectsToBeMatched.Clone());
                     matchIndex = 0;
                 }
             }
-            
+
             //if Unmatched puzzle object count is equal to slot count, game over
             if (_buckedToSelectUnmatches.Count == View.MatchSlotLimit - GameData.MaxSlotIncrementAmount)
             {
                 Debug.Log("No matches found and match board is full. Game Over.");
                 GameManager.Instance.CompleteLevel(false);
             }
-            
         }
-        
+
         private void HandleMatched(PuzzleObjectInstance[] matchedPuzzleObjects)
         {
             Debug.Assert(matchedPuzzleObjects.Length == GameData.MatchCountToClear);
-                
+
             GameDataStore.Instance.AddClearMatchedPuzzleObject(matchedPuzzleObjects[0].TypeId);
-            
+
             //scale up the middle and move others to the sides and dispose them
             var middleIndex = matchedPuzzleObjects.Length / 2;
             for (int i = 0; i < matchedPuzzleObjects.Length; i++)
@@ -224,7 +239,7 @@ namespace Game.Widgets.MatchWidget
         {
             var puzzleObjectInstance = _slots[slotIndex];
             var targetSlotPosition = GetTargetSlotPosition(slotIndex);
-            
+
             puzzleObjectInstance.transform.DOMove(targetSlotPosition,
                     GameDataStore.Instance.GameData.PuzzleObjectMatchJumpDuration).SetEase(Ease.OutQuad)
                 .SetLink(puzzleObjectInstance.gameObject).OnComplete(() =>
@@ -264,7 +279,7 @@ namespace Game.Widgets.MatchWidget
                 {
                     puzzleObjectInstance.transform.position = targetSlotPosition;
                 });
-            
+
             var targetScale = puzzleObjectInstance.transform.localScale *
                               GameDataStore.Instance.GameData.PuzzleObjectMatchScaleMultiplier;
             puzzleObjectInstance.transform
@@ -284,49 +299,40 @@ namespace Game.Widgets.MatchWidget
                 targetSlotPosition.z);
         }
 
-        public void Update(EmptyData emptyData)
-        {
-            if(_isCreated) return;
-            Initialize();
-        }
+        #endregion
+
 
         #region Star Collection Streak
-
         
-        private double _remainingStarStrikeCooldownTime = 0;
-        private byte StarCollectionStreak = 0;
-        
-        private double _reamainingStarStrikeWaitTime = 0;
-        
-        private void InitiateStarCollectionStreak()
+        private void ResetStarCollectionStreak()
         {
-            StarCollectionStreak = 0;
+            StarCollectionStrike = 0;
             _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
-            _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+            _remainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
             UpdateViewStarCollectionStreak();
         }
         private void PopulateStar()
         {
-            StarCollectionStreak ++;
+            StarCollectionStrike ++;
             _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
-            _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+            _remainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
 
             UpdateViewStarCollectionStreak();
         }
         private void DecreaseStarStrikeCooldowns()
         {
-            _reamainingStarStrikeWaitTime -= Time.deltaTime;
-            if (_reamainingStarStrikeWaitTime > 0) return;
+            _remainingStarStrikeWaitTime -= Time.deltaTime;
+            if (_remainingStarStrikeWaitTime > 0) return;
             
             _remainingStarStrikeCooldownTime -= Time.deltaTime;
             if (_remainingStarStrikeCooldownTime <= 0)
             {
-                if (StarCollectionStreak > 0)
+                if (StarCollectionStrike > 0)
                 {
-                    StarCollectionStreak --;
+                    StarCollectionStrike --;
                     
                     _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
-                    _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+                    _remainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
                 }
             }
             
@@ -335,7 +341,7 @@ namespace Game.Widgets.MatchWidget
         
         private void UpdateViewStarCollectionStreak()
         {
-            View.UpdateStarCollectionStreak(StarCollectionStreak, (float)_remainingStarStrikeCooldownTime / GameData.StarGainStreakDurationInSeconds);
+            View.UpdateStarCollectionStreak(StarCollectionStrike, (float)_remainingStarStrikeCooldownTime / GameData.StarGainStreakDurationInSeconds);
         }
 
         #endregion

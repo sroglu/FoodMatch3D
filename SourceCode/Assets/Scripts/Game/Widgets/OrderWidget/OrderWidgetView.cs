@@ -1,4 +1,3 @@
-using System;
 using mehmetsrl.MVC.core;
 using TMPro;
 using UnityEngine;
@@ -41,12 +40,7 @@ namespace Game.Widgets.OrderWidget
         }
 
         public override void UpdateView(){ }
-
-        private void Update()
-        {
-            
-        }
-
+        
         public void UpdateTimer(string getRemainingLevelTime)
         {
             _timeLimitText.text = getRemainingLevelTime;

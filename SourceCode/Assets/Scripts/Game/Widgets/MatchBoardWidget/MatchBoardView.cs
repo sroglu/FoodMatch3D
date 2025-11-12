@@ -20,11 +20,12 @@ namespace Game.Widgets.MatchWidget
         
         private RectTransform[] _matchSlots;
         private ActionButtonView[] _actionButtons;
+        private float _strikeSliderValue = 0f;
         
-        public ActionButtonView[] ActionButtons => _actionButtons;
+        public ActionButtonView[] ActionButtons => _actionButtons; 
+        public int MatchSlotLimit => _matchSlots.Length;
         
         private new MatchBoardController Controller => base.Controller as MatchBoardController;
-
 
         protected override void OnCreate()
         {
@@ -65,11 +66,8 @@ namespace Game.Widgets.MatchWidget
             }
         }
 
-        public override void UpdateView()
-        {
-        }
+        public override void UpdateView() { }
         
-        public int MatchSlotLimit => _matchSlots.Length;
 
         public Vector3 GetSlotRectPosition(int slotIndex)
         {
@@ -82,7 +80,6 @@ namespace Game.Widgets.MatchWidget
             return _matchSlots[slotIndex].position;
         }
         
-        private float _strikeSliderValue = 0f;
 
         private void Update()
         {
@@ -94,8 +91,8 @@ namespace Game.Widgets.MatchWidget
         public void UpdateStarCollectionStreak(byte starCollectionStreak, float strikeSliderValue)
         {
             _strikeSliderValue = strikeSliderValue;
-            
-            _starCollectionStreakText.text = $"x{starCollectionStreak}";
+
+            _starCollectionStreakText.text = $"x{starCollectionStreak + 1}";
         }
     }
 }

@@ -5,27 +5,31 @@ using Game.DataStores;
 using mehmetsrl.MVC.core;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Game.Widgets.OrderWidget
 {
     public class OrderWidgetController : Controller<OrderWidgetView, OrderWidgetModel>
     {
-        private readonly Dictionary<int,CustomerController> _instantiatedCustomers = new();
+        private readonly Dictionary<int, CustomerController> _instantiatedCustomers = new();
         private readonly List<int> _ordersIndexes = new();
-        public OrderWidgetController(OrderWidgetModel model, OrderWidgetView view = null) : base(ControllerType.Instance, model, view) { }
+
+        public OrderWidgetController(OrderWidgetModel model, OrderWidgetView view = null) : base(
+            ControllerType.Instance, model, view) { }
+        
+        #region Lifecycle Methods
 
         protected override void OnCreate()
         {
             SetupInitialOrders();
         }
-        
+
         private void SetupInitialOrders()
         {
             for (int i = 0; i < Model.CurrentDataArr.Length; i++)
             {
                 _ordersIndexes.Add(i);
             }
+
             FilterAndDisplayOrders();
         }
 
@@ -39,6 +43,22 @@ namespace Game.Widgets.OrderWidget
             GameDataStore.Instance.OnPuzzleObjectMatched -= OnPuzzleObjectMatched;
             DestroyAllCustomers();
         }
+
+        public void Update(OrderData[] getOrdersFromLevelData)
+        {
+            Model.Update(getOrdersFromLevelData);
+            foreach (var orderData in _instantiatedCustomers)
+            {
+                orderData.Value.Dispose();
+            }
+
+            _instantiatedCustomers.Clear();
+            _ordersIndexes.Clear();
+
+            SetupInitialOrders();
+        }
+
+        #endregion
 
         private void DestroyAllCustomers()
         {
@@ -59,6 +79,9 @@ namespace Game.Widgets.OrderWidget
             FindAndReduceOrders(matchedPuzzleObjects);
         }
 
+        #region Order Management
+
+        // Reduce order quantities based on matched puzzle objects
         private void FindAndReduceOrders(uint matchedPuzzleObjects)
         {
             foreach (var orderIndex in _ordersIndexes)
@@ -71,17 +94,17 @@ namespace Game.Widgets.OrderWidget
                 if (orderData.OrderId == matchedPuzzleObjects)
                 {
                     GameDataStore.Instance.SetAnOrderCompleted();
-                    orderData.Quantity --;
+                    orderData.Quantity--;
                     Debug.Log($"Order {orderIndex} updated. Remaining Quantity: {orderData.Quantity}");
-                    
+
                     if (orderData.Quantity == 0)
                     {
-                        
-                        if(!_instantiatedCustomers.TryGetValue(orderIndex, out var customerController))
+                        if (!_instantiatedCustomers.TryGetValue(orderIndex, out var customerController))
                         {
                             Debug.LogError($"CustomerController not found for orderIndex: {orderIndex}");
                             continue;
                         }
+
                         //Update to clear order visually when scaling down
                         //customerController.SetOrder(orderData.OrderId, orderData.Quantity);
                         customerController.View.RectTransform.DOScale(Vector3.zero, 0.3f).OnComplete(() =>
@@ -90,16 +113,15 @@ namespace Game.Widgets.OrderWidget
                             customerController.EndOrder();
                             _instantiatedCustomers.Remove(orderIndex);
                             UpdateOrders();
-                            
                         }).SetLink(customerController.View.gameObject);
-                        
                     }
                 }
             }
 
             UpdateOrders();
         }
-        
+
+        // Update orders and check for level completion
         private void UpdateOrders()
         {
             //Update orders and remove completed ones
@@ -116,7 +138,7 @@ namespace Game.Widgets.OrderWidget
             }
 
             FilterAndDisplayOrders();
-            
+
             if (_ordersIndexes.Count == 0)
             {
                 //Complete level
@@ -124,7 +146,8 @@ namespace Game.Widgets.OrderWidget
                 GameManager.Instance.CompleteLevel(true);
             }
         }
-        
+
+        // Filter and display orders based on the current order indexes
         private void FilterAndDisplayOrders()
         {
             var ordersToBeDisplayed = new int[math.clamp(_ordersIndexes.Count, 0, View.OrderLimitAtTheSameTime)];
@@ -132,14 +155,16 @@ namespace Game.Widgets.OrderWidget
             {
                 ordersToBeDisplayed[i] = _ordersIndexes[i];
             }
+
             ShowOrders(ordersToBeDisplayed);
         }
 
+        // Display orders in the UI
         private void ShowOrders(int[] ordersToBeDisplayed)
         {
             for (int i = 0; i < ordersToBeDisplayed.Length; i++)
             {
-                var orderIndex= ordersToBeDisplayed[i];
+                var orderIndex = ordersToBeDisplayed[i];
                 var orderData = Model.CurrentDataArr[orderIndex];
                 Debug.Assert(!orderData.IsCompleted);
 
@@ -157,35 +182,23 @@ namespace Game.Widgets.OrderWidget
                     customerController = InstanceManager.Instance.CreateCustomer(customerViewData);
                     _instantiatedCustomers.Add(orderIndex, customerController);
                 }
-                
-                
+
+
                 customerController.View.RectTransform.SetParent(slot);
-                
+
                 customerController.View.RectTransform.sizeDelta = Vector2.zero;
                 customerController.View.RectTransform.anchorMin = Vector2.zero;
                 customerController.View.RectTransform.anchorMax = Vector2.one;
                 customerController.View.RectTransform.anchoredPosition = Vector2.zero;
-                
-                
+
+
                 customerController.View.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack)
                     .SetLink(customerController.View.gameObject);
                 customerController.SetOrder(orderData.OrderId, orderData.Quantity);
             }
-            
         }
 
-        public void Update(OrderData[] getOrdersFromLevelData)
-        {
-            Model.Update(getOrdersFromLevelData);
-            foreach(var orderData in _instantiatedCustomers)
-            {
-                orderData.Value.Dispose();
-            }
-            _instantiatedCustomers.Clear();
-            _ordersIndexes.Clear();
-            
-            SetupInitialOrders();
-
-        }
+        #endregion
+        
     }
 }
