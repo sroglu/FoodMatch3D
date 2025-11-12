@@ -18,7 +18,7 @@ namespace Game
                 {
                     var allLevelNames = System.IO.Directory.GetFiles(Constants.LevelPaths.STREAMING_ASSETS_PATH + $"/{Constants.LevelPaths.LEVEL_FOLDER}/", "level_*.json");
                     
-                    var loopLevel = levelId.Value % GameData.LastLevelId - 1;
+                    var loopLevel = levelId.Value % GameData.LastLevelId;
                     levelName = System.IO.Path.GetFileNameWithoutExtension(allLevelNames[loopLevel % allLevelNames.Length]);
                     filePath = $"{Constants.LevelPaths.STREAMING_ASSETS_PATH}/{Constants.LevelPaths.LEVEL_FOLDER}/{levelName}.json";
                 }
