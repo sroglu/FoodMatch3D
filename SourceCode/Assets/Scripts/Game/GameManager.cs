@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game;
 using Game.Data;
 using Game.Data.ModelData;
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform _puzzleObjectHolder;
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Canvas _worldCanvas;
+    [SerializeField] private GameObject _splashScreenImage;
     
     //DataStores
     private DataStoreManager _dataStoreManager;
@@ -63,6 +65,8 @@ public class GameManager : MonoBehaviour
     {
         InitPages();
     }
+    
+    
     #region Page Management
 
     
@@ -81,9 +85,11 @@ public class GameManager : MonoBehaviour
         else
         {
             dashboardPage.ShowView();
+            _splashScreenImage.SetActive(false);
         }
         
     }
+    
 
     private void Update()
     {
@@ -99,8 +105,13 @@ public class GameManager : MonoBehaviour
 
     private void LoadLevel(LevelId levelId)
     {
-        var level = LevelUtils.LoadLevel(levelId);
+        //var level = LevelUtils.LoadLevel(levelId);
+        _splashScreenImage.SetActive(true);
+        StartCoroutine(LevelUtils.LoadLevelAsync(levelId, OnLevelLoaded));
+    }
 
+    private void OnLevelLoaded(LevelData level)
+    {
         foreach (var puzzleObject in level.PuzzleObjects)
         {
             Debug.Assert(puzzleObject.Quantity * GameData.MatchCountToClear == puzzleObject.Positions.Length);
@@ -114,13 +125,17 @@ public class GameManager : MonoBehaviour
                 SpawnPuzzleObject(puzzleObject.TypeId, puzzleObject.Positions[i], puzzleObject.Rotations[i]);
             }
         }
-
+        
         gamePage.Update(new GamePageData(level));
         dashboardPage.HideView();
         gamePage.ShowView();
         gamePage.View.UpdateView();
+        
+        
+        _splashScreenImage.SetActive(false);
     }
-    
+
+
     public void LoadNextLevel()
     {
         var nextLevelId = new LevelId(GameDataStore.Instance.CurrentLevelId + 1);

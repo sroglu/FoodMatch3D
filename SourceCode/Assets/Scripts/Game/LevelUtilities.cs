@@ -1,11 +1,13 @@
+using System;
+using System.Collections;
 using Game.Data;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game
 {
     public static class LevelUtils
     {
+        #if UNITY_EDITOR
         public static LevelData LoadLevel(LevelId levelId, bool isEditor = false)
         {
             var levelName = levelId.ToString();
@@ -35,10 +37,65 @@ namespace Game
 
             return levelData;
         }
+        #endif
 
+
+        public static IEnumerator LoadLevelAsync(LevelId levelId, Action<LevelData> onLoaded, bool isEditor = false)
+        {
+            var levelName = levelId.ToString();
+            var filePath = 
+                $"{Constants.LevelPaths.STREAMING_ASSETS_PATH}/{Constants.LevelPaths.LEVEL_FOLDER}/{levelName}.json";
+            if (!isEditor)
+            {
+                var isLastLevel = levelId.Value > GameData.LastLevelId;
+                if (isLastLevel)
+                {
+                    var allLevelNames = System.IO.Directory.GetFiles(Constants.LevelPaths.STREAMING_ASSETS_PATH + $"/{Constants.LevelPaths.LEVEL_FOLDER}/", "level_*.json");
+                    var loopLevel = levelId.Value % GameData.LastLevelId;
+                    levelName = System.IO.Path.GetFileNameWithoutExtension(allLevelNames[loopLevel % allLevelNames.Length]);
+                    filePath = $"{Constants.LevelPaths.STREAMING_ASSETS_PATH}/{Constants.LevelPaths.LEVEL_FOLDER}/{levelName}.json";
+                }
+            }
+
+            LevelData levelData;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            var www = UnityEngine.Networking.UnityWebRequest.Get(filePath);
+            yield return www.SendWebRequest();
+            if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            {
+                levelData = JsonUtility.FromJson<LevelData>(www.downloadHandler.text);
+                onLoaded?.Invoke(levelData);
+            }
+            else
+            {
+                Debug.LogError($"Level file not found: {filePath}");
+                onLoaded?.Invoke(null);
+            }
+#else
+            if (!System.IO.File.Exists(filePath))
+            {
+                Debug.LogError($"Level file not found: {filePath}");
+                onLoaded?.Invoke(null);
+                yield break;
+            }
+
+            var json = System.IO.File.ReadAllText(filePath);
+            levelData = JsonUtility.FromJson<LevelData>(json);
+            onLoaded?.Invoke(levelData);
+#endif
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         //Wall Builder
-        
         public static readonly string[] PuzzleWallNames = new[]
         {
             "PuzzleWall_Top",
@@ -48,7 +105,6 @@ namespace Game
             "PuzzleWall_Side3",
             "PuzzleWall_Side4"
         };
-        
         
         // To show puzzle objects at exactly same position in each level, we need to build walls by same logic.
         public static void GetPuzzleViewAndWalls(Vector3 baseSize, float topOffset, Vector2 cameraPositionOffset,
