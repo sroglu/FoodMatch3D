@@ -52,6 +52,6 @@ public class GamePageView : View<GamePageModel>
 
     private void Update()
     {
-        Controller.UpdateTimer();
+        Controller.OnUpdateLoop();
     }
 }

@@ -146,7 +146,7 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
             var puzzleObject = hitInfo.collider.GetComponentInParent<PuzzleObjectInstance>();
             if (puzzleObject != null)
             {
-                Debug.Log($"Hit Puzzle Object TypeId: {puzzleObject.TypeId}");
+                //Debug.Log($"Hit Puzzle Object TypeId: {puzzleObject.TypeId}");
                 OnPuzzleObjectClicked(puzzleObject);
             }
         }
@@ -180,16 +180,25 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         GameDataStore.Instance.ResetSlotIncrementAmount();
     }
 
-    public void UpdateTimer()
+    public void OnUpdateLoop()
     {
-        _orderWidgetController.View.UpdateTimer(GetRemainingLevelTime());
+        if(!TryGetRemainingLevelTime(out var remainingTime))
+        {
+            // Time's up - handle level failure
+            Debug.Log("Level time is up!");
+            GameManager.Instance.CompleteLevel(false);
+            return;
+        }
+        
+        _orderWidgetController.View.UpdateTimer(remainingTime.ToString(@"mm\:ss"));
     }
-    public string GetRemainingLevelTime()
+    private bool TryGetRemainingLevelTime(out TimeSpan remainingTime)
     {
         var timeToComplete = Model.CurrentData.Level.TimeLimitInSeconds;
         TimeSpan elapsedTime = DateTime.Now - _levelStartTime;
-        var remainingTime = timeToComplete - elapsedTime.TotalSeconds;
-        remainingTime = math.max(remainingTime, 0);
-        return TimeSpan.FromSeconds(remainingTime).ToString(@"mm\:ss");
+        var remainingSeconds = timeToComplete - elapsedTime.TotalSeconds;
+        remainingSeconds = math.max(remainingSeconds, 0);
+        remainingTime = TimeSpan.FromSeconds(remainingSeconds);
+        return remainingSeconds > 0;
     }
 }
