@@ -1,7 +1,9 @@
+using System;
 using Game.Widgets.MatchWidget;
 using Game.Widgets.OrderWidget;
 using UnityEngine;
 using mehmetsrl.MVC.core;
+using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -46,5 +48,10 @@ public class GamePageView : View<GamePageModel>
                 Controller.OnViewDisabled();
                 break;
         }
+    }
+
+    private void Update()
+    {
+        Controller.UpdateTimer();
     }
 }

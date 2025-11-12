@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System;
 using mehmetsrl.MVC.core;
+using TMPro;
 using UnityEngine;
 
 namespace Game.Widgets.OrderWidget
@@ -8,6 +9,8 @@ namespace Game.Widgets.OrderWidget
     {
         [SerializeField]
         private RectTransform _slotsParent;
+        
+        [SerializeField] private TMP_Text _timeLimitText;
         
         public int OrderLimitAtTheSameTime => _slotsParent.childCount;
         
@@ -38,5 +41,15 @@ namespace Game.Widgets.OrderWidget
         }
 
         public override void UpdateView(){ }
+
+        private void Update()
+        {
+            
+        }
+
+        public void UpdateTimer(string getRemainingLevelTime)
+        {
+            _timeLimitText.text = getRemainingLevelTime;
+        }
     }
 }

@@ -21,6 +21,9 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
     
     private readonly Collider[] _collisionResults = new Collider[100];
     
+    //store the time when the player started the level to calculate how long they have played
+    private DateTime _levelStartTime;
+    
     public GamePageController(GamePageModel model) : base(ControllerType.Page, model)
     {
     }
@@ -33,7 +36,9 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         
         _orderWidgetController = new OrderWidgetController(new OrderWidgetModel(GetOrdersFromLevelData()), View.OrderWidgetView);
         _matchBoardController = new MatchBoardController(new MatchBoardModel(new EmptyData()), View.MatchBoardView);
-
+        
+        _levelStartTime = DateTime.Now;
+        
         _isCreated = true;
     }
 
@@ -155,6 +160,8 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         RaycastPuzzleObjects();
         _timeSinceLastClick = Time.realtimeSinceStartup;
     }
+    
+    
 
     public void Update(GamePageData gamePageData)
     {
@@ -168,5 +175,20 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         {
             OnCreate();
         }
+        
+        _levelStartTime = DateTime.Now;
+    }
+
+    public void UpdateTimer()
+    {
+        _orderWidgetController.View.UpdateTimer(GetRemainingLevelTime());
+    }
+    public string GetRemainingLevelTime()
+    {
+        var timeToComplete = Model.CurrentData.Level.TimeLimitInSeconds;
+        TimeSpan elapsedTime = DateTime.Now - _levelStartTime;
+        var remainingTime = timeToComplete - elapsedTime.TotalSeconds;
+        remainingTime = math.max(remainingTime, 0);
+        return TimeSpan.FromSeconds(remainingTime).ToString(@"mm\:ss");
     }
 }
