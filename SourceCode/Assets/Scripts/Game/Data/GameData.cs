@@ -45,6 +45,8 @@ namespace Game.Data
 
         #endregion
         
+        public static byte StarGainStreakWaitDurationInSeconds = 1;
+        public static byte StarGainStreakDurationInSeconds = 5;
         public static readonly uint InitialSlotCountForMerge = 7;
         public static readonly uint MaxSlotIncrementAmount = 1;
         public static readonly int MatchCountToClear = 3;

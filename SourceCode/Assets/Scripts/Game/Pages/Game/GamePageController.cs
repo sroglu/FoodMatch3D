@@ -38,7 +38,7 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         _matchBoardController = new MatchBoardController(new MatchBoardModel(new EmptyData()), View.MatchBoardView);
         
         _levelStartTime = DateTime.Now;
-        
+        GameDataStore.Instance.ResetSlotIncrementAmount();
         _isCreated = true;
     }
 
@@ -177,6 +177,7 @@ public class GamePageController : Controller<GamePageView, GamePageModel>
         }
         
         _levelStartTime = DateTime.Now;
+        GameDataStore.Instance.ResetSlotIncrementAmount();
     }
 
     public void UpdateTimer()

@@ -18,11 +18,13 @@ namespace Game.DataStores
         public int CurrentLevelId => _playerData.CurrentLevelId.Value;
         public GameData GameData { get; private set; }
 
-        public Action OnPuzzleObjectMatched;
+        public Action OnPuzzleObjectMatched, OnOrderCompleted;
         
         private PlayerData _playerData;
         private Queue<GameActionData> gameActionQueue { get; } = new();
         private Queue<uint> matchActionQueue { get; } = new();
+        
+        public byte CurrentSlotIncrementAmount { get; private set; }
 
         protected override void OnInitialized()
         {
@@ -44,6 +46,20 @@ namespace Game.DataStores
         public void SetGameData(Data.GameData gameData)
         {
             GameData = gameData;
+        }
+        
+        public void ResetSlotIncrementAmount()
+        {
+            CurrentSlotIncrementAmount = 0;
+        }
+        public void IncrementSlotIncrementAmount()
+        {
+            if (!(CurrentSlotIncrementAmount < GameData.MaxSlotIncrementAmount))
+            {
+                Debug.LogError($"{nameof(IncrementSlotIncrementAmount)} out of range");
+                return;
+            }
+            CurrentSlotIncrementAmount++;
         }
 
         #region Game Actions
@@ -75,6 +91,11 @@ namespace Game.DataStores
         {
             matchActionQueue.Enqueue(typeId);
             OnPuzzleObjectMatched?.Invoke();
+        }
+        
+        public void SetAnOrderCompleted()
+        {
+            OnOrderCompleted?.Invoke();
         }
 
         public bool TryConsumeMatchAction(out uint typeId)

@@ -1,7 +1,11 @@
+using System;
 using Game.Data;
 using Game.Instances.ActionButton;
 using mehmetsrl.MVC.core;
+using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Widgets.MatchWidget
 {
@@ -9,6 +13,9 @@ namespace Game.Widgets.MatchWidget
     {
         [SerializeField] private RectTransform _matchSlotsParent;
         [SerializeField] private RectTransform _actionButtonParent;
+        
+        [SerializeField] private Slider _starCollectionStreakSlider;
+        [SerializeField] private TMP_Text _starCollectionStreakText;
         
         
         private RectTransform[] _matchSlots;
@@ -45,6 +52,19 @@ namespace Game.Widgets.MatchWidget
             }
         }
 
+        protected override void OnStateChanged(ViewState state)
+        {
+            switch (state)
+            {
+                case ViewState.Visible:
+                    Controller.OnViewEnabled();
+                    break;
+                case ViewState.Invisible:
+                    Controller.OnViewDisabled();
+                    break;
+            }
+        }
+
         public override void UpdateView()
         {
         }
@@ -60,6 +80,22 @@ namespace Game.Widgets.MatchWidget
             }
 
             return _matchSlots[slotIndex].position;
+        }
+        
+        private float _strikeSliderValue = 0f;
+
+        private void Update()
+        {
+            Controller.OnUpdateLoop();
+            
+            _starCollectionStreakSlider.SetValueWithoutNotify(math.lerp(_starCollectionStreakSlider.value, _strikeSliderValue, Time.deltaTime * 5f));
+        }
+
+        public void UpdateStarCollectionStreak(byte starCollectionStreak, float strikeSliderValue)
+        {
+            _strikeSliderValue = strikeSliderValue;
+            
+            _starCollectionStreakText.text = $"x{starCollectionStreak}";
         }
     }
 }

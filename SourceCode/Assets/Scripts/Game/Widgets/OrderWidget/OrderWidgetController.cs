@@ -70,6 +70,7 @@ namespace Game.Widgets.OrderWidget
 
                 if (orderData.OrderId == matchedPuzzleObjects)
                 {
+                    GameDataStore.Instance.SetAnOrderCompleted();
                     orderData.Quantity --;
                     Debug.Log($"Order {orderIndex} updated. Remaining Quantity: {orderData.Quantity}");
                     

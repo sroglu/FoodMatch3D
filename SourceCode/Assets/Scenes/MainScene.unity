@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.43943575, g: 0.745283, b: 0.69777817, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -382,6 +382,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _matchSlotsParent: {fileID: 1384784260}
   _actionButtonParent: {fileID: 2132301834}
+  _starCollectionStreakSlider: {fileID: 2024265325}
+  _starCollectionStreakText: {fileID: 1979299753}
 --- !u!1001 &45370732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -885,7 +887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5310609, g: 0.735849, b: 0.6884244, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3266,7 +3268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.11454255, g: 0.6226415, b: 0.4904797, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

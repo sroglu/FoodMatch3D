@@ -27,11 +27,11 @@ namespace Game.Widgets.MatchWidget
         
         protected override void OnCreate()
         {
-            SetupActionButtons();
+            Initialize();
             _isCreated = true;
         }
         
-        private void SetupActionButtons()
+        private void Initialize()
         {
             foreach (var actionButtonView in View.ActionButtons)
             {
@@ -42,6 +42,27 @@ namespace Game.Widgets.MatchWidget
                     _actionButtonControllers.Add(actionButtonView, actionButtonController);
                 }
             }
+            InitiateStarCollectionStreak();
+        }
+        
+        public void OnViewEnabled()
+        {
+            GameDataStore.Instance.OnOrderCompleted += OnOrderCompleted;
+        }
+
+        public void OnViewDisabled()
+        {
+            GameDataStore.Instance.OnOrderCompleted -= OnOrderCompleted;
+        }
+        
+        public void OnUpdateLoop()
+        {
+            DecreaseStarStrikeCooldowns();
+        }
+        
+        private void OnOrderCompleted()
+        {
+            PopulateStar();
         }
 
         private bool GetInsertIndex(uint typeId, out int insertIndex)
@@ -144,6 +165,14 @@ namespace Game.Widgets.MatchWidget
                     matchIndex = 0;
                 }
             }
+            
+            //if Unmatched puzzle object count is equal to slot count, game over
+            if (_buckedToSelectUnmatches.Count == View.MatchSlotLimit - GameData.MaxSlotIncrementAmount)
+            {
+                Debug.Log("No matches found and match board is full. Game Over.");
+                GameManager.Instance.CompleteLevel(false);
+            }
+            
         }
         
         private void HandleMatched(PuzzleObjectInstance[] matchedPuzzleObjects)
@@ -258,7 +287,58 @@ namespace Game.Widgets.MatchWidget
         public void Update(EmptyData emptyData)
         {
             if(_isCreated) return;
-            SetupActionButtons();
+            Initialize();
         }
+
+        #region Star Collection Streak
+
+        
+        private double _remainingStarStrikeCooldownTime = 0;
+        private byte StarCollectionStreak = 0;
+        
+        private double _reamainingStarStrikeWaitTime = 0;
+        
+        private void InitiateStarCollectionStreak()
+        {
+            StarCollectionStreak = 0;
+            _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
+            _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+            UpdateViewStarCollectionStreak();
+        }
+        private void PopulateStar()
+        {
+            StarCollectionStreak ++;
+            _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
+            _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+
+            UpdateViewStarCollectionStreak();
+        }
+        private void DecreaseStarStrikeCooldowns()
+        {
+            _reamainingStarStrikeWaitTime -= Time.deltaTime;
+            if (_reamainingStarStrikeWaitTime > 0) return;
+            
+            _remainingStarStrikeCooldownTime -= Time.deltaTime;
+            if (_remainingStarStrikeCooldownTime <= 0)
+            {
+                if (StarCollectionStreak > 0)
+                {
+                    StarCollectionStreak --;
+                    
+                    _remainingStarStrikeCooldownTime = GameData.StarGainStreakDurationInSeconds;
+                    _reamainingStarStrikeWaitTime = GameData.StarGainStreakWaitDurationInSeconds;
+                }
+            }
+            
+            UpdateViewStarCollectionStreak();
+        }
+        
+        private void UpdateViewStarCollectionStreak()
+        {
+            View.UpdateStarCollectionStreak(StarCollectionStreak, (float)_remainingStarStrikeCooldownTime / GameData.StarGainStreakDurationInSeconds);
+        }
+
+        #endregion
+        
     }
 }
