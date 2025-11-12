@@ -40,6 +40,7 @@ namespace Game.Editor
         private Vector3 _baseSize = GameData.BaseSize;
         private float _topOffset = GameData.TopOffset;
         private Vector2 _cameraPositionOffset = GameData.CameraPositionOffset;
+        private uint _timeLimitSeconds;
 
 
         private static Dictionary<PuzzleObjectSerializationData, List<Rigidbody>> _placedPuzzleObjects = new();
@@ -160,6 +161,9 @@ namespace Game.Editor
         private void HandleNewLevelCreated(LevelData newLevel)
         {
             _currentLevelData = newLevel;
+            
+            _timeLimitSeconds = _currentLevelData.TimeLimitInSeconds;
+            
             ClearScene();
             UpdatePuzzleHolder(_baseSize, _topOffset);
             PlacePuzzleObjectsAtSavedPositions();
@@ -420,14 +424,18 @@ namespace Game.Editor
             float newTopOffset = EditorGUILayout.FloatField("Puzzle Top Offset", _topOffset);
             Vector2 newCameraPositionOffset =
                 EditorGUILayout.Vector2Field("Camera Position Offset", _cameraPositionOffset);
+            
+            var newTimeLimitSeconds = (uint)EditorGUILayout.IntField("Time Limit Seconds", (int)_timeLimitSeconds);
 
             if (newBaseSize != _baseSize ||
                 Math.Abs(newTopOffset - _topOffset) > 0.001f ||
-                newCameraPositionOffset != _cameraPositionOffset)
+                newCameraPositionOffset != _cameraPositionOffset ||
+                newTimeLimitSeconds != _timeLimitSeconds)
             {
                 _baseSize = newBaseSize;
                 _topOffset = newTopOffset;
                 _cameraPositionOffset = newCameraPositionOffset;
+                _timeLimitSeconds = newTimeLimitSeconds;
                 UpdatePuzzleHolder(_baseSize, _topOffset);
             }
 
@@ -777,12 +785,15 @@ namespace Game.Editor
                 OrthographicSize = _sceneCamera.orthographicSize,
                 FarClipPlane = _sceneCamera.farClipPlane
             };
+            
+            _currentLevelData.TimeLimitInSeconds = _timeLimitSeconds;
 
             LevelData levelData = new LevelData
             {
                 Id = _currentLevelData.Id,
                 PuzzleObjects = _currentLevelData.PuzzleObjects,
-                CameraData = _currentLevelData.CameraData
+                CameraData = _currentLevelData.CameraData,
+                TimeLimitInSeconds = _currentLevelData.TimeLimitInSeconds
             };
 
             //Add puzzle object positions and rotations after throwing logic is implemented

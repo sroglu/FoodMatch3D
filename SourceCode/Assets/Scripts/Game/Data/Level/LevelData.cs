@@ -61,5 +61,6 @@ namespace Game.Data
         public LevelId Id;
         public PuzzleObjectSerializationData[] PuzzleObjects;
         public CameraData CameraData;
+        public uint TimeLimitInSeconds = 90; // Default time limit is 90 seconds
     }
 }
